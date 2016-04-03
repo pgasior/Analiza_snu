@@ -109,7 +109,13 @@ public class RecordFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void updateTime(EventTimeElapsed ev) {
-        tv.setText(Integer.toString(ev.getTime()));
+        int totalSecs = ev.getTime();
+        int hours = totalSecs / 3600;
+        int minutes = (totalSecs % 3600) / 60;
+        int seconds = totalSecs % 60;
+
+        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        tv.setText(timeString);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

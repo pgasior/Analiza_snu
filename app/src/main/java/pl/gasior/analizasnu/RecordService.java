@@ -39,7 +39,8 @@ public class RecordService extends Service {
                 (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                         .setOngoing(true)
                         .setContentTitle("Nagrywanie")
-                        .setSmallIcon(R.drawable.ic_hearing);
+                        .setSmallIcon(R.drawable.ic_hearing)
+                        .setContentIntent(pi);
         startForeground(NOTIFICATION_ID,mBuilder.build());
                 new AndroidFFMPEGLocator(getApplicationContext());
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
