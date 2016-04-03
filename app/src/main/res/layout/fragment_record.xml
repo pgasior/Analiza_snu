@@ -23,4 +23,13 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/startRecordButton"
         android:layout_toEndOf="@+id/startRecordButton" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/startRecordButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

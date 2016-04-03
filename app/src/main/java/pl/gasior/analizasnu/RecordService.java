@@ -13,6 +13,7 @@ import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.io.android.AndroidFFMPEGLocator;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import pl.gasior.analizasnu.tarsosExtensions.PipeOutProcessor;
+import pl.gasior.analizasnu.tarsosExtensions.TimeReporter;
 
 public class RecordService extends Service {
 
@@ -47,6 +48,7 @@ public class RecordService extends Service {
         String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
         outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
         dispatcher.addAudioProcessor(outProcessor);
+        dispatcher.addAudioProcessor(new TimeReporter());
         dispatcherThread = new Thread(dispatcher,"Audio Dispatcher");
         dispatcherThread.start();
         return START_STICKY;

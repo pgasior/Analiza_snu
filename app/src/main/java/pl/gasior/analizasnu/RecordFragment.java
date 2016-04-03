@@ -9,6 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 
 
 /**
@@ -20,19 +27,17 @@ import android.widget.Button;
  * create an instance of this fragment.
  */
 public class RecordFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
+    TextView tv;
+    boolean recording;
+    Button startRecord;
+    Button stopRecord;
+
     public RecordFragment() {
         // Required empty public constructor
+
     }
 
 
@@ -46,10 +51,6 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -57,24 +58,58 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_record, container, false);
-        Button startRecord = (Button)view.findViewById(R.id.startRecordButton);
+        startRecord = (Button)view.findViewById(R.id.startRecordButton);
         startRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                recording = true;
                 Intent intent = new Intent(getActivity(),RecordService.class);
                 getActivity().startService(intent);
+                updateState();
             }
         });
 
-        Button stopRecord = (Button)view.findViewById(R.id.stopRecordButton);
+        stopRecord = (Button)view.findViewById(R.id.stopRecordButton);
         stopRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                recording = false;
                 Intent intent = new Intent(getActivity(),RecordService.class);
                 getActivity().stopService(intent);
+                updateState();
             }
         });
+        tv = (TextView)view.findViewById(R.id.textView2);
+        if(savedInstanceState!=null) {
+            tv.setText(savedInstanceState.getString("timeElapsed"));
+            recording=savedInstanceState.getBoolean("recording");
+        }
+        updateState();
         return view;
+    }
+
+    private void updateState() {
+        if(recording) {
+            startRecord.setEnabled(false);
+            stopRecord.setEnabled(true);
+            ((MainActivity)getActivity()).disableDrawer();
+        } else {
+            startRecord.setEnabled(true);
+            stopRecord.setEnabled(false);
+            ((MainActivity)getActivity()).enableDrawer();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("timeElapsed",tv.getText().toString());
+        outState.putBoolean("recording", recording);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void updateTime(EventTimeElapsed ev) {
+        tv.setText(Integer.toString(ev.getTime()));
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -87,6 +122,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        EventBus.getDefault().register(this);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -98,6 +134,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        EventBus.getDefault().unregister(this);
         mListener = null;
     }
 
