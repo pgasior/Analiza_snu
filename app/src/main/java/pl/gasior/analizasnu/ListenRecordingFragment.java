@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import com.squareup.leakcanary.RefWatcher;
+
 import pl.gasior.analizasnu.db.DreamListContract;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
 import pl.gasior.analizasnu.db.DreamListProvider;
@@ -58,8 +60,7 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_listen_recording, container, false);
         lv = (ListView)view.findViewById(R.id.listView);
-        DreamListDbHelper dreamListDbHelper = new DreamListDbHelper(getActivity());
-        SQLiteDatabase db = dreamListDbHelper.getReadableDatabase();
+
         String[] fromColumns = {DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME};
         int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
         adapter = new SimpleCursorAdapter(getActivity(),
@@ -98,7 +99,7 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.i("RF","oncreateloader");
-        return new CursorLoader(getActivity(),
+        return new CursorLoader(getActivity().getApplicationContext(),
                 DreamListProvider.CONTENT_URI,
                 new String[]{DreamListContract.DreamEntry._ID,DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME},
                 null,null,null);
