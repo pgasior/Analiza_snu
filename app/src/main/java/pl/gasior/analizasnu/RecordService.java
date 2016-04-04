@@ -18,6 +18,7 @@ import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
 import pl.gasior.analizasnu.tarsosExtensions.PipeOutProcessor;
 import pl.gasior.analizasnu.tarsosExtensions.TimeReporter;
+import pl.gasior.analizasnu.ui.MainActivity;
 
 public class RecordService extends Service {
 
@@ -79,7 +80,7 @@ public class RecordService extends Service {
         SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+".aac");
-        db.insert(DreamEntry.TABLE_NAME,null,values);
+        db.insert(DreamEntry.TABLE_NAME, null, values);
         db.close();
         stopForeground(true);
     }

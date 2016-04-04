@@ -1,8 +1,7 @@
-package pl.gasior.analizasnu;
+package pl.gasior.analizasnu.ui;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,10 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import com.squareup.leakcanary.RefWatcher;
-
+import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.db.DreamListContract;
-import pl.gasior.analizasnu.db.DreamListDbHelper;
 import pl.gasior.analizasnu.db.DreamListProvider;
 
 
@@ -98,7 +95,7 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.i("RF","oncreateloader");
+        Log.i("RF", "oncreateloader");
         return new CursorLoader(getActivity().getApplicationContext(),
                 DreamListProvider.CONTENT_URI,
                 new String[]{DreamListContract.DreamEntry._ID,DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME},

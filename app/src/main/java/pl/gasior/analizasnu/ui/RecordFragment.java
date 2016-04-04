@@ -1,4 +1,4 @@
-package pl.gasior.analizasnu;
+package pl.gasior.analizasnu.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,13 +11,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.squareup.leakcanary.RefWatcher;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
+import pl.gasior.analizasnu.R;
+import pl.gasior.analizasnu.RecordService;
 
 
 /**
