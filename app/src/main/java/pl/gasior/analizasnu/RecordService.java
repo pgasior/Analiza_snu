@@ -53,7 +53,7 @@ public class RecordService extends Service {
     private void startTARSOSDispatcher() {
         new AndroidFFMPEGLocator(getApplicationContext());
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
-        recordingDate = new SimpleDateFormat("dd-mm-yyyy_HH-mm-ss").format(new Date());
+        recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
         String currFilename = recordingDate+".aac";
         String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
         outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
@@ -80,6 +80,7 @@ public class RecordService extends Service {
         ContentValues values = new ContentValues();
         values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+".aac");
         db.insert(DreamEntry.TABLE_NAME,null,values);
+        db.close();
         stopForeground(true);
     }
 
