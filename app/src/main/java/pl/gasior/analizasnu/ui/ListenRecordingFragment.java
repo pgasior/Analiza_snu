@@ -1,6 +1,7 @@
 package pl.gasior.analizasnu.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -50,6 +52,11 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
         super.onCreate(savedInstanceState);
 
     }
+    private void startDetailActivity(String filename) {
+        Intent intent = new Intent(getActivity(),DreamDetailActivity.class);
+        intent.putExtra("filename",filename);
+        startActivity(intent);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +71,15 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
                 android.R.layout.simple_list_item_1,null,
                 fromColumns,toViews,0);
         lv.setAdapter(adapter);
+        lv.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor c = (Cursor) parent.getAdapter().getItem(position);
+                String filename = c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME));
+                startDetailActivity(filename);
+
+            }
+        });
         getLoaderManager().initLoader(0, null, this);
 
         return view;
