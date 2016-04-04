@@ -5,15 +5,22 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaRecorder;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.io.android.AndroidFFMPEGLocator;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
+import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
 import pl.gasior.analizasnu.tarsosExtensions.CustomFFMPEGLocator;
@@ -34,6 +41,9 @@ public class RecordService extends Service {
     AudioDispatcher dispatcher;
     PipeOutProcessor outProcessor;
     Thread dispatcherThread = null;
+
+    private MediaRecorder recorder;
+    private TimeReportThread timeReportThread;
 
     public RecordService() {
     }
@@ -57,7 +67,7 @@ public class RecordService extends Service {
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
         String currFilename = recordingDate+".aac";
-        String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
+        String filename = getFilesDir().getAbsolutePath() + "/" + currFilename;
         outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
         dispatcher.addAudioProcessor(outProcessor);
         dispatcher.addAudioProcessor(new TimeReporter());
@@ -65,18 +75,43 @@ public class RecordService extends Service {
         dispatcherThread.start();
     }
 
+    private void startMediaRecorder() {
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
+        String currFilename = recordingDate+".aac";
+        String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
+        Log.i(TAG,filename);
+        recorder.setOutputFile(filename);
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        recorder.start();
+
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         makeForeground();
-        startTARSOSDispatcher();
+        //startTARSOSDispatcher();
+        startMediaRecorder();
+        timeReportThread = new TimeReportThread();
+        timeReportThread.start();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        // Cancel the persistent notification.
-        dispatcher.stop();
+        recorder.stop();
+        recorder.reset();
+        recorder.release();
+        timeReportThread.setShouldRun(false);
+        timeReportThread = null;
         DreamListDbHelper dreamListDbHelper= new DreamListDbHelper(this);
         SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -91,5 +126,23 @@ public class RecordService extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         return null;
+    }
+
+    private class TimeReportThread extends Thread {
+        int i=0;
+        private boolean shouldRun = true;
+
+        public void run() {
+            i=0;
+            while(shouldRun) {
+                EventBus.getDefault().post(new EventTimeElapsed(i));
+                i++;
+                SystemClock.sleep(1000);
+            }
+        }
+
+        public void setShouldRun(boolean shouldRun) {
+            this.shouldRun = shouldRun;
+        }
     }
 }
