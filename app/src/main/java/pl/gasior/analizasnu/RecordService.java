@@ -16,6 +16,7 @@ import be.tarsos.dsp.io.android.AndroidFFMPEGLocator;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
+import pl.gasior.analizasnu.tarsosExtensions.CustomFFMPEGLocator;
 import pl.gasior.analizasnu.tarsosExtensions.PipeOutProcessor;
 import pl.gasior.analizasnu.tarsosExtensions.TimeReporter;
 import pl.gasior.analizasnu.ui.MainActivity;
@@ -52,7 +53,7 @@ public class RecordService extends Service {
 
 
     private void startTARSOSDispatcher() {
-        new AndroidFFMPEGLocator(getApplicationContext());
+        new CustomFFMPEGLocator(getApplicationContext());
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
         String currFilename = recordingDate+".aac";
