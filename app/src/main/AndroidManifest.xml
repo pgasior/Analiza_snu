@@ -27,6 +27,9 @@
             android:name=".RecordService"
             android:enabled="true"
             android:exported="false"></service>
+        <provider android:name=".db.DreamListProvider"
+            android:authorities="pl.gasior.analizasnu.db.DreamListProvider">
+        </provider>
     </application>
 
 </manifest>

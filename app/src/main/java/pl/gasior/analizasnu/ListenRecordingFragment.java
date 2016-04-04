@@ -1,12 +1,24 @@
 package pl.gasior.analizasnu;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+
+import pl.gasior.analizasnu.db.DreamListContract;
+import pl.gasior.analizasnu.db.DreamListDbHelper;
+import pl.gasior.analizasnu.db.DreamListProvider;
 
 
 /**
@@ -17,54 +29,46 @@ import android.view.ViewGroup;
  * Use the {@link ListenRecordingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListenRecordingFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class ListenRecordingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private OnFragmentInteractionListener mListener;
+    SimpleCursorAdapter adapter;
+    ListView lv;
 
     public ListenRecordingFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListenRecordingFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ListenRecordingFragment newInstance(String param1, String param2) {
+
+    public static ListenRecordingFragment newInstance() {
         ListenRecordingFragment fragment = new ListenRecordingFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_listen_recording, container, false);
+        View view = inflater.inflate(R.layout.fragment_listen_recording, container, false);
+        lv = (ListView)view.findViewById(R.id.listView);
+        DreamListDbHelper dreamListDbHelper = new DreamListDbHelper(getActivity());
+        SQLiteDatabase db = dreamListDbHelper.getReadableDatabase();
+        String[] fromColumns = {DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME};
+        int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
+        adapter = new SimpleCursorAdapter(getActivity(),
+                android.R.layout.simple_list_item_1,null,
+                fromColumns,toViews,0);
+        lv.setAdapter(adapter);
+        getLoaderManager().initLoader(0, null, this);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -89,6 +93,25 @@ public class ListenRecordingFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.i("RF","oncreateloader");
+        return new CursorLoader(getActivity(),
+                DreamListProvider.CONTENT_URI,
+                new String[]{DreamListContract.DreamEntry._ID,DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME},
+                null,null,null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        adapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.swapCursor(null);
     }
 
     /**
