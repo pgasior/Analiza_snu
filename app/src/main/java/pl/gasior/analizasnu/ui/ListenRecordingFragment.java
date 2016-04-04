@@ -10,15 +10,21 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import java.io.File;
+
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.db.DreamListContract;
+import pl.gasior.analizasnu.db.DreamListDbHelper;
 import pl.gasior.analizasnu.db.DreamListProvider;
 
 
@@ -54,7 +60,7 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
     }
     private void startDetailActivity(String filename) {
         Intent intent = new Intent(getActivity(),DreamDetailActivity.class);
-        intent.putExtra("filename",filename);
+        intent.putExtra("filename", filename);
         startActivity(intent);
     }
 
@@ -80,9 +86,48 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
 
             }
         });
+        registerForContextMenu(lv);
         getLoaderManager().initLoader(0, null, this);
 
         return view;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater= getActivity().getMenuInflater();
+        inflater.inflate(R.menu.dream_list_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        switch(item.getItemId()) {
+            case R.id.delete:
+                deleteDream(info.position);
+            default:
+                return super.onContextItemSelected(item);
+        }
+
+    }
+
+    private void deleteDream(int position) {
+        Cursor c = (Cursor)lv.getAdapter().getItem(position);
+        int id = c.getInt(c.getColumnIndex(DreamListContract.DreamEntry._ID));
+        String filename = c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME));
+        File f = new File( getActivity().getExternalFilesDir(null),filename);
+        if(f.exists()) {
+            f.delete();
+        }
+        DreamListDbHelper db = new DreamListDbHelper(getActivity());
+        db.getWritableDatabase().delete(
+                DreamListContract.DreamEntry.TABLE_NAME,
+                DreamListContract.DreamEntry._ID+"="+id,
+                null
+        );
+        db.close();
+        getLoaderManager().restartLoader(0,null,this);
+        //lv.getAdapter().notify();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
