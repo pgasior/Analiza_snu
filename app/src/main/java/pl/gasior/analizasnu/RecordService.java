@@ -66,7 +66,7 @@ public class RecordService extends Service {
         new CustomFFMPEGLocator(getApplicationContext());
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
-        String currFilename = recordingDate+".aac";
+        String currFilename = recordingDate+".mp4";
         String filename = getFilesDir().getAbsolutePath() + "/" + currFilename;
         outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
         dispatcher.addAudioProcessor(outProcessor);
@@ -78,10 +78,10 @@ public class RecordService extends Service {
     private void startMediaRecorder() {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
-        String currFilename = recordingDate+".aac";
+        String currFilename = recordingDate+".mp4";
         String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
         Log.i(TAG,filename);
         recorder.setOutputFile(filename);
@@ -115,7 +115,7 @@ public class RecordService extends Service {
         DreamListDbHelper dreamListDbHelper= new DreamListDbHelper(this);
         SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+".aac");
+        values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+".mp4");
         db.insert(DreamEntry.TABLE_NAME, null, values);
         db.close();
         stopForeground(true);

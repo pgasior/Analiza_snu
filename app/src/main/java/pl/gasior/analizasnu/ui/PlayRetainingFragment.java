@@ -40,6 +40,7 @@ public class PlayRetainingFragment extends Fragment {
             }
         });
         try {
+            Log.i(LOG_TAG,getActivity().getExternalFilesDir(null).getAbsolutePath() + "/" +plik);
             mPlayer.setDataSource(getActivity().getExternalFilesDir(null).getAbsolutePath() + "/" +plik);
             mPlayer.prepare();
             mPlayer.start();
