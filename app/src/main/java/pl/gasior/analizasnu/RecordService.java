@@ -78,8 +78,8 @@ public class RecordService extends Service {
     private void startMediaRecorder() {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
         String currFilename = recordingDate+".mp4";
         String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;

@@ -35,6 +35,7 @@ public class PlayRetainingFragment extends Fragment {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 playing = false;
+                mPlayer.release();
                 ((DreamDetailActivity) getActivity()).updateUi();
 
             }
@@ -42,6 +43,7 @@ public class PlayRetainingFragment extends Fragment {
         try {
             Log.i(LOG_TAG,getActivity().getExternalFilesDir(null).getAbsolutePath() + "/" +plik);
             mPlayer.setDataSource(getActivity().getExternalFilesDir(null).getAbsolutePath() + "/" +plik);
+
             mPlayer.prepare();
             mPlayer.start();
         } catch (IOException e) {
