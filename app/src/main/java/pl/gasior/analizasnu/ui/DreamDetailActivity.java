@@ -61,7 +61,8 @@ public class DreamDetailActivity extends AppCompatActivity {
         startPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playFragment.play(filename);
+                //playFragment.play(filename);
+                playFragment.playTarsos(filename);
                 updateUi();
             }
         });
@@ -69,7 +70,8 @@ public class DreamDetailActivity extends AppCompatActivity {
         stopPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playFragment.stopPlaying();
+                //playFragment.stopPlaying();
+                playFragment.stopTarsos();
                 updateUi();
             }
         });
