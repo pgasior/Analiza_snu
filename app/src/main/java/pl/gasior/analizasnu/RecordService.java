@@ -77,6 +77,7 @@ public class RecordService extends Service {
 
     private void startMediaRecorder() {
         recorder = new MediaRecorder();
+        recorder.reset();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);

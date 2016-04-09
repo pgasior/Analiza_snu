@@ -11,18 +11,27 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalFinishedEvent;
 import pl.gasior.analizasnu.R;
+import pl.gasior.analizasnu.SilenceRemovalService;
 
 public class DreamDetailActivity extends AppCompatActivity {
 
     private final String TAG = this.getClass().getName();
 
     private boolean playing;
+    private boolean removingSilence;
     private PlayRetainingFragment playFragment;
     private Button startPlayButton;
     private Button stopPlayButton;
     private Button analysisButton;
+    private ProgressBar progressBar;
     private String filename;
 
     @Override
@@ -65,9 +74,50 @@ public class DreamDetailActivity extends AppCompatActivity {
             }
         });
         analysisButton = (Button)findViewById(R.id.analysisButton);
+        analysisButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removingSilence=!removingSilence;
+                Intent intent = new Intent(getApplicationContext(),SilenceRemovalService.class);
+                intent.putExtra("filename",filename);
+                startService(intent);
+                updateUi();
+            }
+        });
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        if(savedInstanceState!=null) {
+            removingSilence = savedInstanceState.getBoolean("removingSilence");
+        } else {
+            removingSilence = false;
+        }
         //Log.i(TAG,"updateui w oncreate activity");
         updateUi();
+    }
 
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleSilenceRemovalFinished(SilenceRemovalFinishedEvent ev) {
+        removingSilence = false;
+        Intent intent = new Intent(this,SilenceRemovalService.class);
+        stopService(intent);
+        updateUi();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean("removingSilence",removingSilence);
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     public void updateUi() {
@@ -83,6 +133,13 @@ public class DreamDetailActivity extends AppCompatActivity {
                     stopPlayButton.setEnabled(false);
                     analysisButton.setEnabled(true);
                 }
+
+                if(removingSilence) {
+                    progressBar.setVisibility(View.VISIBLE);
+                } else {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+
             }
         });
 

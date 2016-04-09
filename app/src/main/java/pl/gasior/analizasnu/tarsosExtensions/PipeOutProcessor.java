@@ -29,7 +29,7 @@ public class PipeOutProcessor implements AudioProcessor {
         this.audioFormat = audioFormat;
         this.fileName = fileName;
         this.pipeEncoder = new PipeEncoder(this.audioFormat);
-        this.outputStream = pipeEncoder.getEncodingStream(fileName, "mp4", 22050);
+        this.outputStream = pipeEncoder.getEncodingStream(fileName, "aac", 22050);
         this.writePaused = false;
     }
     

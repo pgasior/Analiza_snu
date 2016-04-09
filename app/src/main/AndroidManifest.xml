@@ -30,9 +30,14 @@
             android:enabled="true"
             android:exported="false" />
 
+        <service
+            android:name=".SilenceRemovalService"
+            android:enabled="true"
+            android:exported="false" />
+
         <provider
             android:name=".db.DreamListProvider"
-            android:authorities="pl.gasior.analizasnu.db.DreamListProvider"></provider>
+            android:authorities="pl.gasior.analizasnu.db.DreamListProvider" />
 
         <activity
             android:name=".ui.DreamDetailActivity"
@@ -43,6 +48,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pl.gasior.analizasnu.ui.MainActivity" />
         </activity>
+
     </application>
 
 </manifest>

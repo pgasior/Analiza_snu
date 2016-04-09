@@ -119,7 +119,7 @@ public class PipeEncoder {
 			ProcessBuilder pb;
 			pb= new ProcessBuilder(pipeEnvironment, pipeArgument , command);
 
-			LOG.info("Starting piped decoding process for " + resource);
+			LOG.info("Starting piped encoding process for " + resource);
 			final Process process = pb.start();
 			
 			final OutputStream stdIn = new BufferedOutputStream(process.getOutputStream(), pipeBuffer){
@@ -139,15 +139,15 @@ public class PipeEncoder {
 				public void run() {
 					try {
 						process.waitFor();
-						LOG.info("Finished piped decoding process");
+						LOG.info("Finished piped encoding process");
 					} catch (InterruptedException e) {
-						LOG.severe("Interrupted while waiting for decoding sub process exit.");
+						LOG.severe("Interrupted while waiting for encoding sub process exit.");
 						e.printStackTrace();
 					}
-				}},"Decoding Pipe").start();
+				}},"Encoding Pipe").start();
 			return stdIn;
 		} catch (IOException e) {
-			LOG.warning("IO exception while decoding audio via sub process." + e.getMessage() );
+			LOG.warning("IO exception while encoding audio via sub process." + e.getMessage() );
 			e.printStackTrace();
 		}
 		return null;
