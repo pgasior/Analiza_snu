@@ -12,12 +12,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalFinishedEvent;
+import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalProgessEvent;
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.SilenceRemovalService;
 
@@ -33,6 +36,7 @@ public class DreamDetailActivity extends AppCompatActivity {
     private Button analysisButton;
     private ProgressBar progressBar;
     private String filename;
+    private TextView tvProcessed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,7 @@ public class DreamDetailActivity extends AppCompatActivity {
             playFragment.setPlaying(playing);
             // load the data from the web
         }
+        tvProcessed = (TextView)findViewById(R.id.textView3);
         playing = playFragment.isPlaying();
         startPlayButton = (Button)findViewById(R.id.startPlayButton);
         startPlayButton.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +111,17 @@ public class DreamDetailActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void updateTvProcessed(EventTimeElapsed ev) {
+        int totalSecs = ev.getTime();
+        int hours = totalSecs / 3600;
+        int minutes = (totalSecs % 3600) / 60;
+        int seconds = totalSecs % 60;
+
+        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        tvProcessed.setText(timeString);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

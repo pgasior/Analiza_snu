@@ -9,8 +9,11 @@ import be.tarsos.dsp.io.TarsosDSPAudioFormat;
 import be.tarsos.dsp.io.TarsosDSPAudioFormat.Encoding;
 import be.tarsos.dsp.util.FFMPEGDownloader;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
@@ -130,6 +133,8 @@ public class PipeEncoder {
 					process.destroy();
 				}
 			};
+
+            new ErrorStreamGobbler(process.getErrorStream(),LOG).start();
 			
 			//print std error if requested
 
@@ -174,6 +179,31 @@ public class PipeEncoder {
         sb.append(audioFormat.getChannels());
         sb.append(" -i pipe:0 -vn -ar %sample_rate% -ac %channels% -c:a %output_codec% -strict -2 \"%resource%\"");
         return sb.toString();    
+    }
+
+    private class ErrorStreamGobbler extends Thread {
+        private final InputStream is;
+        private final Logger logger;
+
+        private ErrorStreamGobbler(InputStream is, Logger logger) {
+            this.is = is;
+            this.logger = logger;
+        }
+
+        @Override
+        public void run() {
+            try {
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    logger.info(line);
+                }
+            }
+            catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
     }
 
 }

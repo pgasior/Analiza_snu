@@ -79,7 +79,7 @@ public class RecordService extends Service {
         recorder = new MediaRecorder();
         recorder.reset();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
         String currFilename = recordingDate+".mp4";
