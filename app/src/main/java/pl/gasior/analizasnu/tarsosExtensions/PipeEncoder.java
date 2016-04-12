@@ -134,7 +134,7 @@ public class PipeEncoder {
 				}
 			};
 
-            new ErrorStreamGobbler(process.getErrorStream(),LOG).start();
+            new ErrorStreamGobbler(process.getErrorStream(),LOG, false).start();
 			
 			//print std error if requested
 
@@ -184,10 +184,12 @@ public class PipeEncoder {
     private class ErrorStreamGobbler extends Thread {
         private final InputStream is;
         private final Logger logger;
+        private boolean outputToLogcat;
 
-        private ErrorStreamGobbler(InputStream is, Logger logger) {
+        private ErrorStreamGobbler(InputStream is, Logger logger, boolean outputToLogcat) {
             this.is = is;
             this.logger = logger;
+            this.outputToLogcat = outputToLogcat;
         }
 
         @Override
@@ -196,12 +198,16 @@ public class PipeEncoder {
                 InputStreamReader isr = new InputStreamReader(is);
                 BufferedReader br = new BufferedReader(isr);
                 String line = null;
+                //isr.
                 while ((line = br.readLine()) != null) {
-                    logger.info(line);
+                    if(outputToLogcat) {
+                        logger.info(line);
+                    }
                 }
             }
             catch (IOException ioe) {
-                ioe.printStackTrace();
+                //ioe.printStackTrace();
+                LOG.info("Stream closed");
             }
         }
     }

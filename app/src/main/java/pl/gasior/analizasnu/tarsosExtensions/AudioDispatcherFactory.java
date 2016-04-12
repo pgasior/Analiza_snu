@@ -25,6 +25,7 @@ package pl.gasior.analizasnu.tarsosExtensions;
 
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import be.tarsos.dsp.AudioDispatcher;
 
@@ -42,6 +43,8 @@ import be.tarsos.dsp.io.android.AndroidAudioInputStream;
  */
 public class AudioDispatcherFactory {
 
+	private final static String TAG = AudioDispatcherFactory.class.getName();
+
 	/**
 	 * Create a new AudioDispatcher connected to the default microphone.
 	 * 
@@ -54,6 +57,26 @@ public class AudioDispatcherFactory {
 	 *            The size of the overlap (in samples).
 	 * @return A new AudioDispatcher
 	 */
+
+	public static AudioDispatcher alternativeFromDefaultMicrophone(final int sampleRate,
+																   final int audioBufferSize,
+																   final int bufferOverlap) {
+		int minAudioBufferSize = AudioRecord.getMinBufferSize(sampleRate,
+				android.media.AudioFormat.CHANNEL_IN_MONO,
+				android.media.AudioFormat.ENCODING_PCM_16BIT);
+		Log.i(TAG,"minAudioBufferSize = "+minAudioBufferSize);
+		AudioRecord audioInputStream = new AudioRecord(
+				MediaRecorder.AudioSource.MIC, sampleRate,
+				android.media.AudioFormat.CHANNEL_IN_MONO,
+				android.media.AudioFormat.ENCODING_PCM_16BIT,
+				minAudioBufferSize*2);
+		TarsosDSPAudioFormat format = new TarsosDSPAudioFormat(sampleRate, 16,1, true, false);
+		TarsosDSPAudioInputStream audioStream = new AndroidAudioInputStream(audioInputStream, format);
+		audioInputStream.startRecording();
+		return new AudioDispatcher(audioStream,audioBufferSize,bufferOverlap);
+
+	}
+
 	public static AudioDispatcher fromDefaultMicrophone(final int sampleRate,
 			final int audioBufferSize, final int bufferOverlap) {
 		int minAudioBufferSize = AudioRecord.getMinBufferSize(sampleRate,

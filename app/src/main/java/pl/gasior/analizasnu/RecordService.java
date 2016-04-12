@@ -19,10 +19,11 @@ import java.util.Date;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.io.android.AndroidFFMPEGLocator;
-import be.tarsos.dsp.io.android.AudioDispatcherFactory;
+
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
+import pl.gasior.analizasnu.tarsosExtensions.AudioDispatcherFactory;
 import pl.gasior.analizasnu.tarsosExtensions.CustomFFMPEGLocator;
 import pl.gasior.analizasnu.tarsosExtensions.PipeOutProcessor;
 import pl.gasior.analizasnu.tarsosExtensions.TimeReporter;
@@ -64,10 +65,10 @@ public class RecordService extends Service {
 
     private void startTARSOSDispatcher() {
         new CustomFFMPEGLocator(getApplicationContext());
-        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+        dispatcher = AudioDispatcherFactory.alternativeFromDefaultMicrophone(22050, 1024, 0);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
-        String currFilename = recordingDate+".mp4";
-        String filename = getFilesDir().getAbsolutePath() + "/" + currFilename;
+        String currFilename = recordingDate+".aac";
+        String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
         outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
         dispatcher.addAudioProcessor(outProcessor);
         dispatcher.addAudioProcessor(new TimeReporter());
@@ -82,7 +83,7 @@ public class RecordService extends Service {
         recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
-        String currFilename = recordingDate+".mp4";
+        String currFilename = recordingDate+".aac";
         String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
         Log.i(TAG,filename);
         recorder.setOutputFile(filename);
@@ -99,24 +100,25 @@ public class RecordService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         makeForeground();
-        //startTARSOSDispatcher();
-        startMediaRecorder();
-        timeReportThread = new TimeReportThread();
-        timeReportThread.start();
+        startTARSOSDispatcher();
+//        startMediaRecorder();
+//        timeReportThread = new TimeReportThread();
+//        timeReportThread.start();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        recorder.stop();
-        recorder.reset();
-        recorder.release();
-        timeReportThread.setShouldRun(false);
-        timeReportThread = null;
+//        recorder.stop();
+//        recorder.reset();
+//        recorder.release();
+//        timeReportThread.setShouldRun(false);
+//        timeReportThread = null;
+        dispatcher.stop();
         DreamListDbHelper dreamListDbHelper= new DreamListDbHelper(this);
         SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+".mp4");
+        values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+".aac");
         db.insert(DreamEntry.TABLE_NAME, null, values);
         db.close();
         stopForeground(true);
