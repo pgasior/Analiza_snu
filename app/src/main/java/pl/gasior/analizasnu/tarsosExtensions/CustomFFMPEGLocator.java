@@ -109,12 +109,14 @@ public class CustomFFMPEGLocator {
 
     private CPUArchitecture getCPUArchitecture() {
         // check if device is x86
+
         String abi ="";
-        if(Build.VERSION.SDK_INT>=21) {
+        if(Build.VERSION.SDK_INT>21) {
             abi = Build.SUPPORTED_ABIS[0];
         } else {
             abi = Build.CPU_ABI;
         }
+        Log.i(TAG,"ABI: " + abi);
         if (abi.equals("x86")){
             return CPUArchitecture.X86;
         } else if (abi.equals("armeabi-v7a")) {
@@ -125,7 +127,8 @@ public class CustomFFMPEGLocator {
                 return CPUArchitecture.ARMEABI_V7A;
             }
         }
-        return null;
+        //return null;
+        return CPUArchitecture.ARMEABI_V7A;
     }
 
     private boolean isNeonSupported() {

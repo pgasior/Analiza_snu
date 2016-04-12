@@ -5,6 +5,8 @@
  */
 package pl.gasior.analizasnu.tarsosExtensions;
 
+import android.util.Log;
+
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.io.TarsosDSPAudioFormat;
@@ -18,6 +20,8 @@ import java.util.logging.Logger;
  * @author Piotrek
  */
 public class PipeOutProcessor implements AudioProcessor {
+
+    private final String TAG = this.getClass().getName();
 
     private final TarsosDSPAudioFormat audioFormat;
     private final String fileName;
@@ -48,6 +52,7 @@ public class PipeOutProcessor implements AudioProcessor {
 
     @Override
     public void processingFinished() {
+        Log.i(TAG, "processingFinished");
         try {
             outputStream.flush();
             outputStream.close();

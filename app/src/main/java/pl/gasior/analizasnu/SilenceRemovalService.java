@@ -13,6 +13,7 @@ import pl.gasior.analizasnu.tarsosExtensions.AudioDispatcherFactory;
 import pl.gasior.analizasnu.tarsosExtensions.CustomFFMPEGLocator;
 import pl.gasior.analizasnu.tarsosExtensions.PipeOutProcessor;
 import pl.gasior.analizasnu.tarsosExtensions.SilenceRemovalFinishedReporter;
+import pl.gasior.analizasnu.tarsosExtensions.SlicerProcessor;
 import pl.gasior.analizasnu.tarsosExtensions.TimeReporter;
 import pl.gasior.analizasnu.ui.DreamDetailActivity;
 import pl.gasior.analizasnu.ui.MainActivity;
@@ -58,10 +59,11 @@ public class SilenceRemovalService extends Service {
                 getExternalFilesDir(null).getAbsolutePath() + "/" + filename,
                 22050,1024,0);
         audioDispatcher.addAudioProcessor(new TimeReporter(10));
-        audioDispatcher.addAudioProcessor(new SilenceDetector(-92.0,true));
-        String newfn = filename.replace(".mp4",".sielnce_removed.aac");
-        outProcessor = new PipeOutProcessor(audioDispatcher.getFormat(),getExternalFilesDir(null).getAbsolutePath() + "/" +newfn);
-        audioDispatcher.addAudioProcessor(outProcessor);
+        audioDispatcher.addAudioProcessor(new SlicerProcessor(-92.0,getExternalFilesDir(null).getAbsolutePath() + "/",filename,audioDispatcher));
+//        audioDispatcher.addAudioProcessor(new SilenceDetector(-92.0,true));
+//        String newfn = filename.replace(".mp4",".sielnce_removed.aac");
+//        outProcessor = new PipeOutProcessor(audioDispatcher.getFormat(),getExternalFilesDir(null).getAbsolutePath() + "/" +newfn);
+//        audioDispatcher.addAudioProcessor(outProcessor);
 
         audioDispatcher.addAudioProcessor(new SilenceRemovalFinishedReporter());
         dispatcherThread = new Thread(audioDispatcher,"Audio Dispatcher");
