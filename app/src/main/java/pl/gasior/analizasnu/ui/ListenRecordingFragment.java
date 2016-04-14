@@ -157,8 +157,9 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.i("RF", "oncreateloader");
+        Uri uri = DreamListContract.BASE_CONTENT_URI.buildUpon().appendPath(DreamListContract.PATH_DREAMS).build();
         return new CursorLoader(getActivity().getApplicationContext(),
-                DreamListProvider.CONTENT_URI,
+                uri,
                 new String[]{DreamListContract.DreamEntry._ID,DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME},
                 null,null,null);
     }
