@@ -104,7 +104,7 @@ public class CustomFFMPEGLocator {
     }
 
     private enum CPUArchitecture{
-        X86,ARMEABI_V7A,ARMEABI_V7A_NEON;
+        X86,ARMEABI_V7A,ARMEABI_V7A_NEON
     }
 
     private CPUArchitecture getCPUArchitecture() {

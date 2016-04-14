@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         if(savedInstanceState==null) {
             navigationView.getMenu().getItem(0).setChecked(true);
             FragmentManager fm = getSupportFragmentManager();
-            Fragment fragment = (Fragment)RecordFragment.newInstance();
+            Fragment fragment = RecordFragment.newInstance();
             fm.beginTransaction().replace(R.id.flContent,fragment).commit();
         }
     }
