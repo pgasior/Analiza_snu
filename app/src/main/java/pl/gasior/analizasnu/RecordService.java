@@ -33,6 +33,8 @@ public class RecordService extends Service {
 
     private static final String TAG = RecordService.class.getName();
 
+    public static final String EXTENSION = ".aac";
+
     private static final String ACTION_START_RECORDING = "pl.gasior.analizasnu.action.START_RECORDING";
     private static final String ACTION_STOP_RECORDING = "pl.gasior.analizasnu.action.STOP_RECORDING";
 
@@ -67,7 +69,7 @@ public class RecordService extends Service {
         new CustomFFMPEGLocator(getApplicationContext());
         dispatcher = AudioDispatcherFactory.alternativeFromDefaultMicrophone(22050, 1024, 0);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
-        String currFilename = recordingDate+".aac";
+        String currFilename = recordingDate+EXTENSION;
         String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
         outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
         dispatcher.addAudioProcessor(outProcessor);
@@ -83,7 +85,7 @@ public class RecordService extends Service {
         recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
-        String currFilename = recordingDate+".aac";
+        String currFilename = recordingDate+EXTENSION;
         String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
         Log.i(TAG,filename);
         recorder.setOutputFile(filename);
@@ -118,7 +120,7 @@ public class RecordService extends Service {
         DreamListDbHelper dreamListDbHelper= new DreamListDbHelper(this);
         SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+".aac");
+        values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+EXTENSION);
         db.insert(DreamEntry.TABLE_NAME, null, values);
         db.close();
         stopForeground(true);

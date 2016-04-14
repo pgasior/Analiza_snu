@@ -10,6 +10,7 @@ import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
+import pl.gasior.analizasnu.RecordService;
 
 /**
  * Created by Piotrek on 11.04.2016.
@@ -26,6 +27,7 @@ public class SlicerProcessor implements AudioProcessor {
     int sliceId;
     String path;
     double lastSound;
+    double currentTime;
 
     public SlicerProcessor(double threshold,String path, String filenameBase, AudioDispatcher audioDispatcher) {
         this.threshold = threshold;
@@ -40,13 +42,14 @@ public class SlicerProcessor implements AudioProcessor {
 
     @Override
     public boolean process(AudioEvent audioEvent) {
+        currentTime = audioEvent.getTimeStamp();
         boolean silentNow = audioEvent.getdBSPL()< threshold;
 
         if(!silentNow) {
             if(silentLast) {
                 Log.i(TAG,"Wykryto dzwiek, zaczynam "+ sliceId +" w "+audioEvent.getTimeStamp());
                 silentLast = false;
-                String newFilename = filenameBase.replace(".mp4","."+sliceId+".wav");
+                String newFilename = filenameBase.replace(RecordService.EXTENSION,"."+sliceId+".wav");
                 //pipeOutProcessor = new PipeOutProcessor(audioDispatcher.getFormat(), path + newFilename);
                 File plik = new File( path + newFilename);
                 try {
@@ -114,6 +117,9 @@ public class SlicerProcessor implements AudioProcessor {
 
     @Override
     public void processingFinished() {
+        if(!silentLast) {
+            Log.i(TAG, "Koniec nagrywania, zamykam ostatnia probke " + sliceId + " w " + currentTime);
+        }
 
     }
 }
