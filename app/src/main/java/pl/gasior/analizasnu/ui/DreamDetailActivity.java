@@ -127,6 +127,9 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor c = (Cursor) parent.getAdapter().getItem(position);
                 String filename = c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME));
+                if(playFragment.isPlaying()) {
+                    playFragment.stopTarsos();
+                }
                 playFragment.playTarsos(filename);
                 updateUi();
             }

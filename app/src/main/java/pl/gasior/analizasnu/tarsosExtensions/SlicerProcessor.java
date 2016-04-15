@@ -38,6 +38,7 @@ public class SlicerProcessor implements AudioProcessor {
     double startTimestamp;
     Calendar startCalendar;
     String newFilename;
+    private double gapSize = 2.0;
 
     public SlicerProcessor(double threshold,String path, String filenameBase, AudioDispatcher audioDispatcher, long dreamId) {
         this.threshold = threshold;
@@ -74,7 +75,7 @@ public class SlicerProcessor implements AudioProcessor {
             }
             lastSound = audioEvent.getTimeStamp();
             return true;
-        } else if(silentNow && !silentLast && audioEvent.getTimeStamp()<lastSound+0.5) {
+        } else if(silentNow && !silentLast && audioEvent.getTimeStamp()<lastSound+gapSize) {
             return true;
         } else {
             if(!silentLast) {
