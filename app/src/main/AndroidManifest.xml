@@ -37,7 +37,7 @@
 
         <provider
             android:name=".db.DreamListProvider"
-            android:authorities="pl.gasior.analizasnu.db.DreamListProvider" />
+            android:authorities="pl.gasior.analizasnu" />
 
         <activity
             android:name=".ui.DreamDetailActivity"

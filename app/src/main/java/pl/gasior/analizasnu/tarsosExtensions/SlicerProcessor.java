@@ -2,14 +2,20 @@ package pl.gasior.analizasnu.tarsosExtensions;
 
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
+import pl.gasior.analizasnu.EventBusPOJO.DreamSliceEvent;
 import pl.gasior.analizasnu.RecordService;
 
 /**
@@ -28,8 +34,12 @@ public class SlicerProcessor implements AudioProcessor {
     String path;
     double lastSound;
     double currentTime;
+    long dreamId;
+    double startTimestamp;
+    Calendar startCalendar;
+    String newFilename;
 
-    public SlicerProcessor(double threshold,String path, String filenameBase, AudioDispatcher audioDispatcher) {
+    public SlicerProcessor(double threshold,String path, String filenameBase, AudioDispatcher audioDispatcher, long dreamId) {
         this.threshold = threshold;
         this.filenameBase = filenameBase;
         this.path = path;
@@ -37,6 +47,8 @@ public class SlicerProcessor implements AudioProcessor {
         this.sliceId = 0;
         this.silentLast = true;
         this.lastSound = 0.0;
+        this.dreamId = dreamId;
+        this.startCalendar = Calendar.getInstance();
 
     }
 
@@ -48,8 +60,9 @@ public class SlicerProcessor implements AudioProcessor {
         if(!silentNow) {
             if(silentLast) {
                 Log.i(TAG,"Wykryto dzwiek, zaczynam "+ sliceId +" w "+audioEvent.getTimeStamp());
+                startTimestamp = audioEvent.getTimeStamp();
                 silentLast = false;
-                String newFilename = filenameBase.replace(RecordService.EXTENSION,"."+sliceId+".wav");
+                newFilename = filenameBase.replace(RecordService.EXTENSION,"."+sliceId+".wav");
                 //pipeOutProcessor = new PipeOutProcessor(audioDispatcher.getFormat(), path + newFilename);
                 File plik = new File( path + newFilename);
                 try {
@@ -67,6 +80,7 @@ public class SlicerProcessor implements AudioProcessor {
             if(!silentLast) {
                 Log.i(TAG, "Wykryto cisze, ucinam " + sliceId + " w " + audioEvent.getTimeStamp());
                 audioDispatcher.removeAudioProcessor(writerProcessor);
+                sendSlice(currentTime);
                 sliceId++;
 
             }
@@ -74,52 +88,36 @@ public class SlicerProcessor implements AudioProcessor {
             return false;
         }
 
-//        if(silentNow && audioEvent.getTimeStamp()>lastSound+0.5 && !silentLast) { //cisza
-////            if(!silentLast/*!silent &&*/ /*audioEvent.getTimeStamp()>lastSound+0.5*/) { //&& pipeOutProcessor!=null) { //wczesniej byl dzwiek
-//                //pipeOutProcessor.setWritePaused(true);
-//
-//                //audioDispatcher.removeAudioProcessor(writerProcessor);
-//                //audioDispatcher.removeAudioProcessor(pipeOutProcessor);
-//                Log.i(TAG,"Wykryto cisze, ucinam " + sliceId +" w "+audioEvent.getTimeStamp());
-//                //silent = true;
-//                sliceId++;
-//                //lastSound = audioEvent.getTimeStamp();
-//            silentLast = true;
-//
-////            } //else zignoruj
-//            return false;
-//        } else { //dzwiek
-//            if(silentLast) { //wczesniej byla cisza
-//                String newFilename = filenameBase.replace(".mp4","."+sliceId+".wav");
-//                //pipeOutProcessor = new PipeOutProcessor(audioDispatcher.getFormat(), path + newFilename);
-//                //File plik = new File( path + newFilename);
-////                try {
-////                    writerProcessor = new WriterProcessor(audioDispatcher.getFormat(),new RandomAccessFile( plik,"rw"));
-////                } catch (FileNotFoundException e) {
-////                    e.printStackTrace();
-////                }
-////                audioDispatcher.addAudioProcessor(writerProcessor);
-//                //audioDispatcher.addAudioProcessor(pipeOutProcessor);
-//
-//                Log.i(TAG,"Wykryto dzwiek, zaczynam "+ sliceId +" w "+audioEvent.getTimeStamp());
-////                silent = false;
-//
-//                silentLast = false;
-//
-//            } //else zapisz do pliku
-//            if(!silentNow) {
-//                lastSound = audioEvent.getTimeStamp();
-//            }
-//            //Log.i(TAG,"Zapis ");
-//        }
-//        return true;
+
+    }
+    private void sendSlice(double endTimestamp) {
+        Calendar sliceStartCalendar = (Calendar)startCalendar.clone();
+        sliceStartCalendar.add(Calendar.SECOND,(int)startTimestamp);
+        int startMilis = (int)(1000*(startTimestamp-(int)startTimestamp));
+        sliceStartCalendar.add(Calendar.MILLISECOND,startMilis);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        dateFormat.setCalendar(sliceStartCalendar);
+        String startDateString = dateFormat.format(sliceStartCalendar.getTime());
+
+        Calendar sliceEndCalendar = (Calendar)startCalendar.clone();
+        sliceEndCalendar.add(Calendar.SECOND,(int)endTimestamp);
+        int endMilis = (int)(1000*(endTimestamp-(int)endTimestamp));
+        sliceStartCalendar.add(Calendar.MILLISECOND,endMilis);
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        dateFormat.setCalendar(sliceEndCalendar);
+        String endDateString = dateFormat.format(sliceEndCalendar.getTime());
+
+        EventBus.getDefault().postSticky(new DreamSliceEvent(1,newFilename,startDateString,endDateString));
+        Log.i(TAG, "Wyslalem event");
     }
 
     @Override
     public void processingFinished() {
         if(!silentLast) {
             Log.i(TAG, "Koniec nagrywania, zamykam ostatnia probke " + sliceId + " w " + currentTime);
+            sendSlice(currentTime);
         }
+        EventBus.getDefault().postSticky(new DreamSliceEvent(0,null,null,null));
 
     }
 }

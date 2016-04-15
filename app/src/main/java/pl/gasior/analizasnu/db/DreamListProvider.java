@@ -15,7 +15,7 @@ import android.util.Log;
  */
 public class DreamListProvider extends ContentProvider {
 
-    private static final String PROVIDER_NAME =  DreamListProvider.class.getName();
+    //private static final String PROVIDER_NAME =  DreamListProvider.class.getName();
     private DreamListDbHelper dreamListDbHelper;
     //public static final Uri CONTENT_URI = Uri.parse("content://" + PROVIDER_NAME+"/dreams");
 
@@ -32,12 +32,29 @@ public class DreamListProvider extends ContentProvider {
     static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = DreamListContract.CONTENT_AUTHORITY;
-        matcher.addURI(PROVIDER_NAME, DreamListContract.PATH_DREAMS, DREAMS);
-        matcher.addURI(PROVIDER_NAME, DreamListContract.PATH_DREAMS + "/#", DREAMS_ID);
-        matcher.addURI(PROVIDER_NAME,DreamListContract.PATH_DREAM_SLICES,SLICES);
+        matcher.addURI(authority, DreamListContract.PATH_DREAMS, DREAMS);
+        matcher.addURI(authority, DreamListContract.PATH_DREAMS + "/#", DREAMS_ID);
+        matcher.addURI(authority,DreamListContract.PATH_DREAM_SLICES,SLICES);
 
         return matcher;
     }
+
+    private static final SQLiteQueryBuilder sDreamsSlicesQueryBuilder;
+
+    static{
+        sDreamsSlicesQueryBuilder = new SQLiteQueryBuilder();
+
+        //This is an inner join which looks like
+        //weather INNER JOIN location ON weather.location_id = location._id
+        sDreamsSlicesQueryBuilder.setTables(
+                DreamEntry.TABLE_NAME + " INNER JOIN " +
+                        DreamListContract.DreamSliceEntry.TABLE_NAME +
+                        " ON " + DreamEntry.TABLE_NAME +
+                        "." + DreamEntry._ID +
+                        " = " + DreamListContract.DreamSliceEntry.TABLE_NAME +
+                        "." + DreamListContract.DreamSliceEntry.COLUMN_DREAM_KEY);
+    }
+
 //    static{
 //        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 //        uriMatcher.addURI(PROVIDER_NAME, "dreams", DREAMS);
@@ -88,6 +105,14 @@ public class DreamListProvider extends ContentProvider {
                 Log.i("CP","matched dreams_id");
                 retCursor = getDreamById(uri,projection,sortOrder);
                 break;
+            case SLICES:
+                return sDreamsSlicesQueryBuilder.query(dreamListDbHelper.getReadableDatabase(),
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
 

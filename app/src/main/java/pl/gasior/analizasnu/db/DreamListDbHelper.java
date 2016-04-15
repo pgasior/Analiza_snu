@@ -4,12 +4,13 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
+import pl.gasior.analizasnu.db.DreamListContract.DreamSliceEntry;
 
 /**
  * Created by Piotrek on 04.04.2016.
  */
 public class DreamListDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "DreamsList.db";
 
     public DreamListDbHelper(Context context) {
@@ -21,13 +22,26 @@ public class DreamListDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         final String TEXT_TYPE = " TEXT";
         final String COMMA_SEP = ",";
-        final String SQL_CREATE_ENTRIES =
+        final String SQL_CREATE_DREAMS_TABLE =
                 "CREATE TABLE " + DreamEntry.TABLE_NAME + " (" +
                         DreamEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                         DreamEntry.COLUMN_NAME_AUDIO_FILENAME + TEXT_TYPE + COMMA_SEP +
-                        DreamEntry.COLUMN_NAME_SAMPLES_DB_FILENAME + TEXT_TYPE +
+                        DreamEntry.COLUMN_NAME_DATE_START + TEXT_TYPE + COMMA_SEP +
+                        DreamEntry.COLUMN_NAME_DATE_END + TEXT_TYPE +
                         " )";
-        db.execSQL(SQL_CREATE_ENTRIES);
+        db.execSQL(SQL_CREATE_DREAMS_TABLE);
+
+        final String SQL_CREATE_SLICES_TABLE =
+                "CREATE TABLE " + DreamSliceEntry.TABLE_NAME + " (" +
+                        DreamSliceEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                        DreamSliceEntry.COLUMN_DREAM_KEY + " INTEGER" + COMMA_SEP +
+                        DreamSliceEntry.COLUMN_SLICE_FILENAME + TEXT_TYPE + COMMA_SEP +
+                        DreamSliceEntry.COLUMN_SLICE_START + TEXT_TYPE + COMMA_SEP +
+                        DreamSliceEntry.COLUMN_SLICE_END + TEXT_TYPE + COMMA_SEP +
+                        " FOREIGN KEY (" + DreamSliceEntry.COLUMN_DREAM_KEY + ") REFERENCES " +
+                        DreamEntry.TABLE_NAME + " (" + DreamEntry._ID + ") ON DELETE CASCADE " +
+                ")";
+        db.execSQL(SQL_CREATE_SLICES_TABLE);
 
     }
 

@@ -23,9 +23,9 @@ public class DreamListContract {
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_DREAMS).build();
         public static final String TABLE_NAME = "dreams";
         public static final String COLUMN_NAME_AUDIO_FILENAME = "audiofilename";
-        public static final String COLUMN_NAME_SAMPLES_DB_FILENAME = "samplesdbfilename";
+        //public static final String COLUMN_NAME_SAMPLES_DB_FILENAME = "samplesdbfilename";
         public static final String COLUMN_NAME_DATE_START = "date_start";
-        public static final String COLUMN_NAME_LENGTH = "length";
+        public static final String COLUMN_NAME_DATE_END = "date_end";
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_DREAMS;
         public static final String CONTENT_ITEM_TYPE =

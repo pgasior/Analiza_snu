@@ -1,17 +1,26 @@
 package pl.gasior.analizasnu.ui;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,8 +32,9 @@ import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalFinishedEvent;
 import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalProgessEvent;
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.SilenceRemovalService;
+import pl.gasior.analizasnu.db.DreamListContract;
 
-public class DreamDetailActivity extends AppCompatActivity {
+public class DreamDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private final String TAG = this.getClass().getName();
 
@@ -37,6 +47,8 @@ public class DreamDetailActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private String filename;
     private TextView tvProcessed;
+    private ListView slicesListView;
+    SimpleCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,8 +109,19 @@ public class DreamDetailActivity extends AppCompatActivity {
         } else {
             removingSilence = false;
         }
+
+        slicesListView = (ListView)findViewById(R.id.slicesListView);
+        String[] fromColumns = {DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME};
+        int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
+        adapter = new SimpleCursorAdapter(this,
+                android.R.layout.simple_list_item_1,null,
+                fromColumns,toViews,0);
+        slicesListView.setAdapter(adapter);
+
         //Log.i(TAG,"updateui w oncreate activity");
+        getSupportLoaderManager().initLoader(0, null, this);
         updateUi();
+
     }
 
     @Override
@@ -169,5 +192,28 @@ public class DreamDetailActivity extends AppCompatActivity {
             playFragment.stopPlaying();
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri uri = DreamListContract.BASE_CONTENT_URI.buildUpon().appendPath(DreamListContract.PATH_DREAM_SLICES).build();
+        String[] projection = new String[] {
+                DreamListContract.DreamSliceEntry.TABLE_NAME+"."+DreamListContract.DreamSliceEntry._ID,
+                DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME
+        };
+        String selection= DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME+" = ?";
+        String[] selectionArgs= new String[] {filename};
+        return new CursorLoader(this,uri,projection,selection,selectionArgs,null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i(TAG,"Load finished");
+        adapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.swapCursor(null);
     }
 }

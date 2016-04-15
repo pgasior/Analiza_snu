@@ -111,7 +111,7 @@ public class CustomFFMPEGLocator {
         // check if device is x86
 
         String abi ="";
-        if(Build.VERSION.SDK_INT>21) {
+        if(Build.VERSION.SDK_INT>=21) {
             abi = Build.SUPPORTED_ABIS[0];
         } else {
             abi = Build.CPU_ABI;
