@@ -88,4 +88,13 @@
         android:layout_alignTop="@+id/calibrationButton"
         android:layout_toRightOf="@+id/calibrationButton"
         android:layout_toEndOf="@+id/calibrationButton" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Analiza w trakcie nagrywania"
+        android:id="@+id/cbAnalysisDuringRecording"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/stopRecordButton"
+        android:layout_toEndOf="@+id/stopRecordButton" />
 </RelativeLayout>

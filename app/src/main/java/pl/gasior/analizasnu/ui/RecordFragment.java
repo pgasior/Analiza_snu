@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,6 +46,7 @@ public class RecordFragment extends Fragment {
     CalibrationRetainingFragment calibrationRetainingFragment;
     double calibrationLevel;
     boolean calibrationDone;
+    CheckBox cbAnalysisDuringRecording;
 
     public RecordFragment() {
         // Required empty public constructor
@@ -75,6 +77,7 @@ public class RecordFragment extends Fragment {
             calibrationRetainingFragment = new CalibrationRetainingFragment();
             fm.beginTransaction().add(calibrationRetainingFragment,"calibrationRetainingFragment").commit();
         }
+        cbAnalysisDuringRecording = (CheckBox)view.findViewById(R.id.cbAnalysisDuringRecording);
         startRecord = (Button)view.findViewById(R.id.startRecordButton);
         startRecord.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +85,7 @@ public class RecordFragment extends Fragment {
                 recording = true;
                 Intent intent = new Intent(getActivity(),RecordService.class);
                 intent.putExtra("calibrationLevel", calibrationLevel);
+                intent.putExtra("removeSilence",cbAnalysisDuringRecording.isChecked());
                 getActivity().startService(intent);
                 updateState();
             }
@@ -127,6 +131,7 @@ public class RecordFragment extends Fragment {
             calibrationLevel = savedInstanceState.getDouble("calibrationLevel");
             calibrationDone = savedInstanceState.getBoolean("calibrationDone");
             tvCalibrationLevel.setText(String.valueOf(calibrationLevel));
+            cbAnalysisDuringRecording.setChecked(savedInstanceState.getBoolean("cbAnalysisDuringRecording"));
         }
         updateState();
         return view;
@@ -171,6 +176,7 @@ public class RecordFragment extends Fragment {
         outState.putBoolean("recording", recording);
         outState.putDouble("calibrationLevel",calibrationLevel);
         outState.putBoolean("calibrationDone",calibrationDone);
+        outState.putBoolean("cbAnalysisDuringRecording",cbAnalysisDuringRecording.isChecked());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

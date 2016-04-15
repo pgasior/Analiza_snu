@@ -26,6 +26,7 @@ import pl.gasior.analizasnu.db.DreamListDbHelper;
 import pl.gasior.analizasnu.tarsosExtensions.AudioDispatcherFactory;
 import pl.gasior.analizasnu.tarsosExtensions.CustomFFMPEGLocator;
 import pl.gasior.analizasnu.tarsosExtensions.PipeOutProcessor;
+import pl.gasior.analizasnu.tarsosExtensions.SlicerProcessor;
 import pl.gasior.analizasnu.tarsosExtensions.TimeReporter;
 import pl.gasior.analizasnu.ui.MainActivity;
 
@@ -47,8 +48,12 @@ public class RecordService extends Service {
 
     private MediaRecorder recorder;
     private TimeReportThread timeReportThread;
+    private long dreamId;
+    private boolean removeSilence;
 
     private double calibrationLevel;
+
+    Thread dbWriterThread;
 
     public RecordService() {
     }
@@ -100,12 +105,45 @@ public class RecordService extends Service {
 
     }
 
+    public void startTarsosWithSilenceRemoval() {
+        recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
+
+        DreamListDbHelper dreamListDbHelper= new DreamListDbHelper(this);
+        SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+EXTENSION);
+        values.put(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL,String.valueOf(calibrationLevel));
+        dreamId = db.insert(DreamEntry.TABLE_NAME, null, values);
+        db.close();
+
+        dbWriterThread = new Thread(new SliceDbWriterRunnable(this,dreamId),"SliceDbWriterRunnable");
+        dbWriterThread.start();
+
+        new CustomFFMPEGLocator(getApplicationContext());
+        dispatcher = AudioDispatcherFactory.alternativeFromDefaultMicrophone(22050, 1024, 0);
+
+        String currFilename = recordingDate+EXTENSION;
+        String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
+        outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
+        dispatcher.addAudioProcessor(outProcessor);
+        dispatcher.addAudioProcessor(new TimeReporter());
+        dispatcher.addAudioProcessor(new SlicerProcessor(calibrationLevel,getExternalFilesDir(null).getAbsolutePath() + "/",currFilename,dispatcher,dreamId));
+        dispatcherThread = new Thread(dispatcher,"Audio Dispatcher");
+        dispatcherThread.start();
+
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         makeForeground();
         calibrationLevel = intent.getDoubleExtra("calibrationLevel",-94.0);
-        startTARSOSDispatcher();
+        removeSilence = intent.getBooleanExtra("removeSilence", false);
+        if(!removeSilence) {
+            startTARSOSDispatcher();
+        } else {
+            startTarsosWithSilenceRemoval();
+        }
 //        startMediaRecorder();
 //        timeReportThread = new TimeReportThread();
 //        timeReportThread.start();
@@ -120,13 +158,15 @@ public class RecordService extends Service {
 //        timeReportThread.setShouldRun(false);
 //        timeReportThread = null;
         dispatcher.stop();
-        DreamListDbHelper dreamListDbHelper= new DreamListDbHelper(this);
-        SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+EXTENSION);
-        values.put(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL,String.valueOf(calibrationLevel));
-        db.insert(DreamEntry.TABLE_NAME, null, values);
-        db.close();
+        if(!removeSilence) {
+            DreamListDbHelper dreamListDbHelper = new DreamListDbHelper(this);
+            SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME, recordingDate + EXTENSION);
+            values.put(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL, String.valueOf(calibrationLevel));
+            db.insert(DreamEntry.TABLE_NAME, null, values);
+            db.close();
+        }
         stopForeground(true);
     }
 
