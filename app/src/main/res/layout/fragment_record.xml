@@ -32,4 +32,62 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:text="00:00:00" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kalibracja"
+        android:id="@+id/calibrationButton"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Poziom dzwieku:"
+        android:id="@+id/textView4"
+        android:layout_below="@+id/calibrationButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/tvBackgroundLevel"
+        android:layout_above="@+id/textView6"
+        android:layout_alignLeft="@+id/tvCalibrationLevel"
+        android:layout_alignStart="@+id/tvCalibrationLevel" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Poziom wykrycia:"
+        android:id="@+id/textView6"
+        android:layout_below="@+id/textView4"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/tvCalibrationLevel"
+        android:layout_below="@+id/tvBackgroundLevel"
+        android:layout_toRightOf="@+id/stopRecordButton"
+        android:layout_toEndOf="@+id/stopRecordButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zakończ kalibrację"
+        android:id="@+id/endCalibrationButton"
+        android:layout_alignTop="@+id/calibrationButton"
+        android:layout_toRightOf="@+id/calibrationButton"
+        android:layout_toEndOf="@+id/calibrationButton" />
 </RelativeLayout>

@@ -14,6 +14,7 @@ import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.io.android.AndroidAudioPlayer;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import pl.gasior.analizasnu.tarsosExtensions.CustomFFMPEGLocator;
+import pl.gasior.analizasnu.tarsosExtensions.PlayFinishedProcessor;
 
 /**
  * Created by Piotrek on 04.04.2016.
@@ -39,11 +40,14 @@ public class PlayRetainingFragment extends Fragment {
     }
 
     public void playTarsos(String plik) {
+        playing = true;
+        ((DreamDetailActivity) getActivity()).updateUi();
         new CustomFFMPEGLocator(getActivity().getApplicationContext());
         audioDispatcher = AudioDispatcherFactory.fromPipe(
                 getActivity().getExternalFilesDir(null).getAbsolutePath() + "/" + plik,
                 22050,1024,0);
         audioDispatcher.addAudioProcessor(new AndroidAudioPlayer(audioDispatcher.getFormat()));
+        audioDispatcher.addAudioProcessor(new PlayFinishedProcessor());
         dispatcherThread = new Thread(audioDispatcher,"Audio Dispatcher");
         dispatcherThread.start();
 

@@ -33,6 +33,7 @@ public class SilenceRemovalService extends Service {
     Thread dispatcherThread = null;
     PipeOutProcessor outProcessor;
     long dreamId;
+    double calibrationLevel;
     Thread dbWriterThread;
     
     public SilenceRemovalService() {
@@ -54,15 +55,17 @@ public class SilenceRemovalService extends Service {
 
     }
 
-    private void getDreamId(String filename) {
+    private void getDreamIdAndCalibration(String filename) {
         Log.i(TAG,filename);
         DreamListDbHelper helper = new DreamListDbHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
         String selection = DreamListContract.DreamEntry.TABLE_NAME+"."+ DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME+" = ?";
         Cursor c = db.query(DreamListContract.DreamEntry.TABLE_NAME,new String[] {
-            DreamListContract.DreamEntry._ID},selection,new String[] {filename},null,null,null);
+            DreamListContract.DreamEntry._ID, DreamListContract.DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL},
+                selection,new String[] {filename},null,null,null);
         c.moveToFirst();
         dreamId = c.getLong(c.getColumnIndex(DreamListContract.DreamEntry._ID));
+        calibrationLevel = Double.parseDouble(c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL)));
     }
 
     @Override
@@ -71,13 +74,16 @@ public class SilenceRemovalService extends Service {
 
         makeForeground(filename);
         //startTARSOSDispatcher();
-        getDreamId(filename);
+        getDreamIdAndCalibration(filename);
         startSileneceRemoval(filename);
 
         return START_STICKY;
     }
 
+
+
     private void startSileneceRemoval(String filename) {
+        Log.i(TAG,"calibrationLevel = "+calibrationLevel);
         dbWriterThread = new Thread(new SliceDbWriterRunnable(this,dreamId),"SliceDbWriterRunnable");
         dbWriterThread.start();
         new CustomFFMPEGLocator(getApplicationContext());
@@ -85,7 +91,7 @@ public class SilenceRemovalService extends Service {
                 getExternalFilesDir(null).getAbsolutePath() + "/" + filename,
                 22050,1024,0);
         audioDispatcher.addAudioProcessor(new TimeReporter(10));
-        audioDispatcher.addAudioProcessor(new SlicerProcessor(-92.0,getExternalFilesDir(null).getAbsolutePath() + "/",filename,audioDispatcher,dreamId));
+        audioDispatcher.addAudioProcessor(new SlicerProcessor(calibrationLevel,getExternalFilesDir(null).getAbsolutePath() + "/",filename,audioDispatcher,dreamId));
 //        audioDispatcher.addAudioProcessor(new SilenceDetector(-92.0,true));
 //        String newfn = filename.replace(".mp4",".sielnce_removed.aac");
 //        outProcessor = new PipeOutProcessor(audioDispatcher.getFormat(),getExternalFilesDir(null).getAbsolutePath() + "/" +newfn);

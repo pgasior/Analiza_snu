@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -30,6 +32,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalFinishedEvent;
 import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalProgessEvent;
+import pl.gasior.analizasnu.EventBusPOJO.TarsosPlayFinishedEvent;
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.SilenceRemovalService;
 import pl.gasior.analizasnu.db.DreamListContract;
@@ -72,6 +75,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
             playFragment.setPlaying(playing);
             // load the data from the web
         }
+
         tvProcessed = (TextView)findViewById(R.id.textView3);
         playing = playFragment.isPlaying();
         startPlayButton = (Button)findViewById(R.id.startPlayButton);
@@ -80,7 +84,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
             public void onClick(View v) {
                 //playFragment.play(filename);
                 playFragment.playTarsos(filename);
-                updateUi();
+                //updateUi();
             }
         });
         stopPlayButton = (Button)findViewById(R.id.stopPlayButton);
@@ -118,11 +122,22 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
                 fromColumns,toViews,0);
         slicesListView.setAdapter(adapter);
 
+        slicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor c = (Cursor) parent.getAdapter().getItem(position);
+                String filename = c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME));
+                playFragment.playTarsos(filename);
+                updateUi();
+            }
+        });
+
         //Log.i(TAG,"updateui w oncreate activity");
         getSupportLoaderManager().initLoader(0, null, this);
         updateUi();
 
     }
+
 
     @Override
     protected void onStop() {
@@ -134,6 +149,12 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void playFinished(TarsosPlayFinishedEvent ev) {
+        playFragment.setPlaying(false);
+        updateUi();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -153,6 +174,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
         Intent intent = new Intent(this,SilenceRemovalService.class);
         stopService(intent);
         updateUi();
+        getSupportLoaderManager().restartLoader(0,null,this);
     }
 
     @Override
@@ -165,6 +187,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.i(TAG,"isplaying: "+playFragment.isPlaying());
                 if (playFragment.isPlaying()) {
                     startPlayButton.setEnabled(false);
                     stopPlayButton.setEnabled(true);
@@ -173,13 +196,22 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
                     startPlayButton.setEnabled(true);
                     stopPlayButton.setEnabled(false);
                     analysisButton.setEnabled(true);
+
+                    if(removingSilence ) {
+                        progressBar.setVisibility(View.VISIBLE);
+                        startPlayButton.setEnabled(false);
+                        stopPlayButton.setEnabled(false);
+                        analysisButton.setEnabled(false);
+
+                    } else {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        startPlayButton.setEnabled(true);
+                        stopPlayButton.setEnabled(true);
+                        analysisButton.setEnabled(true);
+                    }
                 }
 
-                if(removingSilence) {
-                    progressBar.setVisibility(View.VISIBLE);
-                } else {
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
+
 
             }
         });
@@ -189,7 +221,8 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     @Override
     public void onBackPressed() {
         if(playFragment.isPlaying()) {
-            playFragment.stopPlaying();
+            //playFragment.stopPlaying();
+            playFragment.stopTarsos();
         }
         super.onBackPressed();
     }

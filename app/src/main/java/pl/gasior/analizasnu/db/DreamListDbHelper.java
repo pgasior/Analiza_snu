@@ -10,7 +10,7 @@ import pl.gasior.analizasnu.db.DreamListContract.DreamSliceEntry;
  * Created by Piotrek on 04.04.2016.
  */
 public class DreamListDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "DreamsList.db";
 
     public DreamListDbHelper(Context context) {
@@ -27,7 +27,8 @@ public class DreamListDbHelper extends SQLiteOpenHelper {
                         DreamEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                         DreamEntry.COLUMN_NAME_AUDIO_FILENAME + TEXT_TYPE + COMMA_SEP +
                         DreamEntry.COLUMN_NAME_DATE_START + TEXT_TYPE + COMMA_SEP +
-                        DreamEntry.COLUMN_NAME_DATE_END + TEXT_TYPE +
+                        DreamEntry.COLUMN_NAME_DATE_END + TEXT_TYPE + COMMA_SEP +
+                        DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL + TEXT_TYPE +
                         " )";
         db.execSQL(SQL_CREATE_DREAMS_TABLE);
 
@@ -50,6 +51,9 @@ public class DreamListDbHelper extends SQLiteOpenHelper {
         final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + DreamEntry.TABLE_NAME;
         db.execSQL(SQL_DELETE_ENTRIES);
+        final String SQL_DELETE_SLICES =
+                "DROP TABLE IF EXISTS " + DreamSliceEntry.TABLE_NAME;
+        db.execSQL(SQL_DELETE_SLICES);
         onCreate(db);
     }
 

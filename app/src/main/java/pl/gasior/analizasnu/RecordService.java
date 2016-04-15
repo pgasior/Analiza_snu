@@ -48,6 +48,8 @@ public class RecordService extends Service {
     private MediaRecorder recorder;
     private TimeReportThread timeReportThread;
 
+    private double calibrationLevel;
+
     public RecordService() {
     }
 
@@ -102,6 +104,7 @@ public class RecordService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         makeForeground();
+        calibrationLevel = intent.getDoubleExtra("calibrationLevel",-94.0);
         startTARSOSDispatcher();
 //        startMediaRecorder();
 //        timeReportThread = new TimeReportThread();
@@ -121,6 +124,7 @@ public class RecordService extends Service {
         SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+EXTENSION);
+        values.put(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL,String.valueOf(calibrationLevel));
         db.insert(DreamEntry.TABLE_NAME, null, values);
         db.close();
         stopForeground(true);

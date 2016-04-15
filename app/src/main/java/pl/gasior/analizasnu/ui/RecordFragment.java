@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import pl.gasior.analizasnu.EventBusPOJO.CalibrationEvent;
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.RecordService;
@@ -36,6 +38,13 @@ public class RecordFragment extends Fragment {
     boolean recording;
     Button startRecord;
     Button stopRecord;
+    TextView tvBackgroundLevel;
+    TextView tvCalibrationLevel;
+    Button calibrationButton;
+    Button endCalibrationButton;
+    CalibrationRetainingFragment calibrationRetainingFragment;
+    double calibrationLevel;
+    boolean calibrationDone;
 
     public RecordFragment() {
         // Required empty public constructor
@@ -60,12 +69,19 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_record, container, false);
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        calibrationRetainingFragment = (CalibrationRetainingFragment)fm.findFragmentByTag("calibrationRetainingFragment");
+        if(calibrationRetainingFragment == null) {
+            calibrationRetainingFragment = new CalibrationRetainingFragment();
+            fm.beginTransaction().add(calibrationRetainingFragment,"calibrationRetainingFragment").commit();
+        }
         startRecord = (Button)view.findViewById(R.id.startRecordButton);
         startRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 recording = true;
                 Intent intent = new Intent(getActivity(),RecordService.class);
+                intent.putExtra("calibrationLevel", calibrationLevel);
                 getActivity().startService(intent);
                 updateState();
             }
@@ -82,9 +98,35 @@ public class RecordFragment extends Fragment {
             }
         });
         tv = (TextView)view.findViewById(R.id.textView2);
+        tvBackgroundLevel = (TextView)view.findViewById(R.id.tvBackgroundLevel);
+        tvCalibrationLevel = (TextView)view.findViewById(R.id.tvCalibrationLevel);
+        calibrationButton = (Button)view.findViewById(R.id.calibrationButton);
+        calibrationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calibrationRetainingFragment.startCalibration();
+                calibrationDone=false;
+                updateState();
+            }
+        });
+        endCalibrationButton = (Button)view.findViewById(R.id.endCalibrationButton);
+        endCalibrationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calibrationDone=true;
+                calibrationRetainingFragment.stopCalibration();
+                calibrationLevel+=2.0;
+                tvCalibrationLevel.setText(String.valueOf(calibrationLevel));
+                updateState();
+            }
+        });
+
         if(savedInstanceState!=null) {
             tv.setText(savedInstanceState.getString("timeElapsed"));
             recording=savedInstanceState.getBoolean("recording");
+            calibrationLevel = savedInstanceState.getDouble("calibrationLevel");
+            calibrationDone = savedInstanceState.getBoolean("calibrationDone");
+            tvCalibrationLevel.setText(String.valueOf(calibrationLevel));
         }
         updateState();
         return view;
@@ -94,10 +136,30 @@ public class RecordFragment extends Fragment {
         if(recording) {
             startRecord.setEnabled(false);
             stopRecord.setEnabled(true);
+            calibrationButton.setEnabled(false);
+            endCalibrationButton.setEnabled(false);
             ((MainActivity)getActivity()).disableDrawer();
         } else {
-            startRecord.setEnabled(true);
+            startRecord.setEnabled(false);
             stopRecord.setEnabled(false);
+            calibrationButton.setEnabled(true);
+            endCalibrationButton.setEnabled(false);
+            if(calibrationRetainingFragment.isCalibrating()) {
+                startRecord.setEnabled(false);
+                stopRecord.setEnabled(false);
+                calibrationButton.setEnabled(false);
+                endCalibrationButton.setEnabled(true);
+            }
+            if(calibrationDone) {
+                startRecord.setEnabled(true);
+                endCalibrationButton.setEnabled(false);
+                calibrationButton.setEnabled(true);
+            }
+//            else {
+//                startRecord.setEnabled(false);
+//            }
+//            stopRecord.setEnabled(false);
+//            calibrationButton.setEnabled(true);
             ((MainActivity)getActivity()).enableDrawer();
         }
     }
@@ -107,6 +169,14 @@ public class RecordFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putString("timeElapsed",tv.getText().toString());
         outState.putBoolean("recording", recording);
+        outState.putDouble("calibrationLevel",calibrationLevel);
+        outState.putBoolean("calibrationDone",calibrationDone);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void calibrationEventHandler(CalibrationEvent ev) {
+        calibrationLevel = ev.getCalibrationValue();
+        tvBackgroundLevel.setText(String.valueOf(calibrationLevel));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -142,6 +212,9 @@ public class RecordFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        if(calibrationRetainingFragment.isCalibrating()) {
+            calibrationRetainingFragment.stopCalibration();
+        }
         EventBus.getDefault().unregister(this);
         mListener = null;
     }
