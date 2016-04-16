@@ -73,14 +73,14 @@ public class RecordService extends Service {
 
 
     private void startTARSOSDispatcher() {
-        new CustomFFMPEGLocator(getApplicationContext());
-        dispatcher = AudioDispatcherFactory.alternativeFromDefaultMicrophone(22050, 1024, 0);
-        recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
-        String currFilename = recordingDate+EXTENSION;
-        String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
-        outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
-        dispatcher.addAudioProcessor(outProcessor);
-        dispatcher.addAudioProcessor(new TimeReporter());
+//        new CustomFFMPEGLocator(getApplicationContext());
+//        dispatcher = AudioDispatcherFactory.alternativeFromDefaultMicrophone(22050, 1024, 0);
+//        recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
+//        String currFilename = recordingDate+EXTENSION;
+//        String filename = getExternalFilesDir(null).getAbsolutePath() + "/" + currFilename;
+//        outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
+//        dispatcher.addAudioProcessor(outProcessor);
+//        dispatcher.addAudioProcessor(new TimeReporter());
         dispatcherThread = new Thread(dispatcher,"Audio Dispatcher");
         dispatcherThread.start();
     }
@@ -105,7 +105,23 @@ public class RecordService extends Service {
 
     }
 
+    private String getCurrentSQLIteDateAsString() {
+        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
+    }
+
     public void startTarsosWithSilenceRemoval() {
+
+
+        dbWriterThread = new Thread(new SliceDbWriterRunnable(this,dreamId),"SliceDbWriterRunnable");
+        dbWriterThread.start();
+
+
+        dispatcherThread = new Thread(dispatcher,"Audio Dispatcher");
+        dispatcherThread.start();
+
+    }
+
+    private void addBasicInfoToDatabase() {
         recordingDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
 
         DreamListDbHelper dreamListDbHelper= new DreamListDbHelper(this);
@@ -113,12 +129,33 @@ public class RecordService extends Service {
         ContentValues values = new ContentValues();
         values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+EXTENSION);
         values.put(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL,String.valueOf(calibrationLevel));
+        values.put(DreamEntry.COLUMN_NAME_DATE_START,getCurrentSQLIteDateAsString());
         dreamId = db.insert(DreamEntry.TABLE_NAME, null, values);
         db.close();
+    }
 
-        dbWriterThread = new Thread(new SliceDbWriterRunnable(this,dreamId),"SliceDbWriterRunnable");
-        dbWriterThread.start();
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        makeForeground();
+        calibrationLevel = intent.getDoubleExtra("calibrationLevel",-94.0);
+        removeSilence = intent.getBooleanExtra("removeSilence", false);
+        addBasicInfoToDatabase();
+        prepareDispatcher();
+        if(!removeSilence) {
+            startTARSOSDispatcher();
+        } else {
+            dispatcher.addAudioProcessor(new SlicerProcessor(calibrationLevel,getExternalFilesDir(null).getAbsolutePath() + "/",recordingDate+EXTENSION,dispatcher,dreamId));
+            startTarsosWithSilenceRemoval();
+        }
+//        startMediaRecorder();
+//        timeReportThread = new TimeReportThread();
+//        timeReportThread.start();
+        return START_STICKY;
+    }
+
+    private void prepareDispatcher() {
         new CustomFFMPEGLocator(getApplicationContext());
         dispatcher = AudioDispatcherFactory.alternativeFromDefaultMicrophone(22050, 1024, 0);
 
@@ -127,27 +164,7 @@ public class RecordService extends Service {
         outProcessor = new PipeOutProcessor(dispatcher.getFormat(),filename);
         dispatcher.addAudioProcessor(outProcessor);
         dispatcher.addAudioProcessor(new TimeReporter());
-        dispatcher.addAudioProcessor(new SlicerProcessor(calibrationLevel,getExternalFilesDir(null).getAbsolutePath() + "/",currFilename,dispatcher,dreamId));
-        dispatcherThread = new Thread(dispatcher,"Audio Dispatcher");
-        dispatcherThread.start();
 
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-        makeForeground();
-        calibrationLevel = intent.getDoubleExtra("calibrationLevel",-94.0);
-        removeSilence = intent.getBooleanExtra("removeSilence", false);
-        if(!removeSilence) {
-            startTARSOSDispatcher();
-        } else {
-            startTarsosWithSilenceRemoval();
-        }
-//        startMediaRecorder();
-//        timeReportThread = new TimeReportThread();
-//        timeReportThread.start();
-        return START_STICKY;
     }
 
     @Override
@@ -158,15 +175,22 @@ public class RecordService extends Service {
 //        timeReportThread.setShouldRun(false);
 //        timeReportThread = null;
         dispatcher.stop();
-        if(!removeSilence) {
-            DreamListDbHelper dreamListDbHelper = new DreamListDbHelper(this);
-            SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME, recordingDate + EXTENSION);
-            values.put(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL, String.valueOf(calibrationLevel));
-            db.insert(DreamEntry.TABLE_NAME, null, values);
-            db.close();
-        }
+        DreamListDbHelper dreamListDbHelper = new DreamListDbHelper(this);
+        SQLiteDatabase db = dreamListDbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DreamEntry.COLUMN_NAME_DATE_END,getCurrentSQLIteDateAsString());
+        db.update(DreamEntry.TABLE_NAME,values,DreamEntry._ID+" = ?",new String[] {String.valueOf(dreamId)});
+        db.close();
+//        if(!removeSilence) {
+//
+//            ContentValues values = new ContentValues();
+//            values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME, recordingDate + EXTENSION);
+//            values.put(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL, String.valueOf(calibrationLevel));
+//            db.insert(DreamEntry.TABLE_NAME, null, values);
+//
+//        }
+//        ContentValues
+//        db.close();
         stopForeground(true);
     }
 

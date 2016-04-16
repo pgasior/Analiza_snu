@@ -108,7 +108,7 @@ public class SlicerProcessor implements AudioProcessor {
         dateFormat.setCalendar(sliceEndCalendar);
         String endDateString = dateFormat.format(sliceEndCalendar.getTime());
 
-        EventBus.getDefault().postSticky(new DreamSliceEvent(1,newFilename,startDateString,endDateString));
+        EventBus.getDefault().post(new DreamSliceEvent(1,newFilename,startDateString,endDateString));
         Log.i(TAG, "Wyslalem event");
     }
 

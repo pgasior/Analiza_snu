@@ -36,7 +36,7 @@ public class SliceDbWriterRunnable implements Runnable{
         shouldRun = true;
     }
 
-    @Subscribe(sticky = true)
+    @Subscribe
     public void addToQueue(DreamSliceEvent ev) {
         Log.i(TAG,"Otrzymalem event");
         queue.offer(ev);
@@ -55,6 +55,7 @@ public class SliceDbWriterRunnable implements Runnable{
             switch(ev.getType()) {
                 case 0:
                     shouldRun = false;
+                    Log.i(TAG,"Otrzymalem event koniec");
                     break;
                 case 1:
                     ContentValues cv = new ContentValues();
