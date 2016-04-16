@@ -209,7 +209,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
                     } else {
                         progressBar.setVisibility(View.INVISIBLE);
                         startPlayButton.setEnabled(true);
-                        stopPlayButton.setEnabled(true);
+                        //stopPlayButton.setEnabled(true);
                         analysisButton.setEnabled(true);
                     }
                 }
