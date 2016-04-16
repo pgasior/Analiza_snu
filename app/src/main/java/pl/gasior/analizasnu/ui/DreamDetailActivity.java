@@ -2,6 +2,7 @@ package pl.gasior.analizasnu.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -29,6 +30,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalFinishedEvent;
 import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalProgessEvent;
@@ -36,6 +39,7 @@ import pl.gasior.analizasnu.EventBusPOJO.TarsosPlayFinishedEvent;
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.SilenceRemovalService;
 import pl.gasior.analizasnu.db.DreamListContract;
+import pl.gasior.analizasnu.db.DreamListDbHelper;
 
 public class DreamDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -103,6 +107,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
                 removingSilence=!removingSilence;
                 Intent intent = new Intent(getApplicationContext(),SilenceRemovalService.class);
                 intent.putExtra("filename",filename);
+                deleteOldSlices();
                 startService(intent);
                 updateUi();
             }
@@ -139,6 +144,33 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
         getSupportLoaderManager().initLoader(0, null, this);
         updateUi();
 
+    }
+
+    private void deleteOldSlices() {
+        Log.i(TAG,"deleteOldSlices");
+        Uri uri = DreamListContract.BASE_CONTENT_URI.buildUpon().appendPath(DreamListContract.PATH_DREAM_SLICES).build();
+        String[] projection = new String[] {
+                DreamListContract.DreamSliceEntry.TABLE_NAME+"."+DreamListContract.DreamSliceEntry._ID,
+                DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME
+        };
+        String selection= DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME+" = ?";
+        String[] selectionArgs= new String[] {filename};
+        Cursor c  = getContentResolver().query(uri,projection,selection,selectionArgs,null);
+        //c.moveToFirst();
+        SQLiteDatabase db = new DreamListDbHelper(this).getWritableDatabase();
+        while(c.moveToNext()) {
+            long id = c.getLong(c.getColumnIndex(DreamListContract.DreamSliceEntry._ID));
+            String filename = c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME));
+            Log.i(TAG,"Filename: "+filename+"  id: "+id);
+            //Log.i(TAG,"Filename: "+filename);
+            File f = new File(getExternalFilesDir(null).getAbsolutePath(),filename);
+            if(f.exists()) {
+                f.delete();
+            }
+            db.delete(DreamListContract.DreamSliceEntry.TABLE_NAME, DreamListContract.DreamSliceEntry._ID+"=?",new String[] {String.valueOf(id)});
+        }
+        c.close();
+        db.close();
     }
 
 
