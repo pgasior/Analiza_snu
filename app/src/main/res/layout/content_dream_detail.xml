@@ -39,12 +39,23 @@
         android:layout_toRightOf="@+id/stopPlayButton"
         android:layout_toEndOf="@+id/stopPlayButton" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wykres"
+        android:id="@+id/graphButton"
+        android:layout_below="@+id/stopPlayButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
-        android:layout_below="@+id/startPlayButton"
+        android:layout_below="@+id/graphButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"

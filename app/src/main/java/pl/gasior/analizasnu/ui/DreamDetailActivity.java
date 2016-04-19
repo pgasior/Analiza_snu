@@ -51,6 +51,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     private Button startPlayButton;
     private Button stopPlayButton;
     private Button analysisButton;
+    private Button graphButton;
     private ProgressBar progressBar;
     private String filename;
     private TextView tvProcessed;
@@ -139,6 +140,19 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
                 updateUi();
             }
         });
+
+        graphButton = (Button)findViewById(R.id.graphButton);
+        graphButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent2 = new Intent(v.getContext(),GraphActivity.class);
+                intent2.putExtra("filename", filename);
+                startActivity(intent2);
+                updateUi();
+            }
+        });
+
+
 
         //Log.i(TAG,"updateui w oncreate activity");
         getSupportLoaderManager().initLoader(0, null, this);

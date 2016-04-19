@@ -84,6 +84,7 @@ public class DreamListProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+
         Log.i("CP","query: "+uri.toString());
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         Cursor retCursor;
@@ -106,6 +107,11 @@ public class DreamListProvider extends ContentProvider {
                 retCursor = getDreamById(uri,projection,sortOrder);
                 break;
             case SLICES:
+                Log.i("CP",selection);
+                Log.i("CP","Selection args:");
+                for(String s : selectionArgs) {
+                    Log.i("CP",s);
+                }
                 return sDreamsSlicesQueryBuilder.query(dreamListDbHelper.getReadableDatabase(),
                         projection,
                         selection,

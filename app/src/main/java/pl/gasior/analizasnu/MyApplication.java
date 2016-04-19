@@ -8,6 +8,7 @@ import com.squareup.leakcanary.RefWatcher;
 
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
+import net.danlew.android.joda.JodaTimeAndroid;
 
 /**
  * Created by Piotrek on 04.04.2016.
@@ -29,6 +30,7 @@ public class MyApplication extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
+        JodaTimeAndroid.init(this);
         //refWatcher = LeakCanary.install(this);
     }
 }
