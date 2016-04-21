@@ -20,15 +20,23 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.XAxis.XAxisPosition;
+import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
+import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import org.joda.time.DateTime;
+import org.joda.time.Seconds;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
+import com.github.mikephil.charting.components.YAxis.AxisDependency;
+
 
 //import java.sql.Timestamp;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -44,11 +52,12 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
     private final String TAG = this.getClass().getName();
     SimpleCursorAdapter adapter;
     private BarChart mChart;
-    private List<String> x = new ArrayList<String>();
+    //private List<String> x = new ArrayList<String>();
 
     private int xIndex;
     private DateTimeFormatter f;
     private float[] y;
+    private int[] x;
 
     private String label;
 
@@ -115,7 +124,14 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
 
     public void processData(Cursor c){
 
-        mChart = new BarChart(this);
+
+        mChart = (BarChart) findViewById(R.id.chart1);
+
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setPosition(XAxisPosition.BOTTOM);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setAxisMinValue(0f);
 
         xIndex = 0;
 
@@ -137,51 +153,75 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
 
 
         c.moveToFirst();
-//        int l = c.getColumnCount();
-//        for(int i=0;i<l;i++)
-//        {
-//            Log.i(TAG,i+" "+c.getString(i));
-//        }
-//        Log.i(TAG,c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_START)));
-        //c.get
-//        while(c.moveToNext()) {
-//            Log.i(TAG,"wpis");
-//        }
 
         DateTime pocz_s = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_START)),f);
         DateTime kon_s = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_END)),f);
-        int diff_s = kon_s.compareTo(pocz_s);
+        Log.i(TAG,"przed while, poczatek snu: "+c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_START))+" koniec: "+c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_END)));
+        Seconds seconds = Seconds.secondsBetween(pocz_s, kon_s);
+        int diff_s = seconds.getSeconds();
+        Log.i(TAG,"w while diff_s = "+diff_s);
+        y = new float[diff_s+1];
+        x = new int[diff_s+1];
+        int lfrag = 0;
+        DateTime[][] fragmenty = new DateTime [diff_s+1][diff_s+1];
+        while(!c.isAfterLast()) {
+            fragmenty[c.getPosition()][0] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_START)).substring(0,19),f);
+            fragmenty[c.getPosition()][1] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0,19),f);
+            lfrag++;
+            Log.i(TAG,"w while, poczatek fragmentu: "+c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_START)).substring(0,19)+" koniec: "+c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0,19));
+            c.moveToNext();
+        }
+        int i = 0;
+        for(i = 0; i<diff_s;i++) {
+            x[i] = i;
+            Boolean w_srodku = false;
+            for (int j = 0; j < lfrag; j++) {
 
-        y = new float[diff_s/1000];
-
-        while(c.moveToNext()) {
-            DateTime pocz_f = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_START)).substring(0,19),f);
-            DateTime kon_f =  DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_END)).substring(0,19),f);
-
-            int diff_f = kon_f.compareTo(pocz_f);
-
-            for(int i=0; i<diff_s/1000;i++)
-            {
-                x.add(String.valueOf(i));
-                if(pocz_s.plusSeconds(i) == pocz_f)
-                {
-                    y[i] = 1.0f;
-                }
-                else
-                {
+                Seconds seconds2 = Seconds.secondsBetween(fragmenty[j][0], fragmenty[j][1]);
+                int diff_f = seconds2.getSeconds();
+                //Log.i(TAG,pocz_s.plusSeconds(i).compareTo(fragmenty[j][0])+" "+pocz_s.plusSeconds(i+1).compareTo(fragmenty[j][1]));
+                if ( (pocz_s.plusSeconds(i).compareTo(fragmenty[j][0]) == -1 && pocz_s.plusSeconds(i+1).compareTo(fragmenty[j][1]) == -1  && !w_srodku)
+                        || ( pocz_s.plusSeconds(i).compareTo(fragmenty[j][0]) == -1  && pocz_s.plusSeconds(i+1).compareTo(fragmenty[j][1]) == 0 && !w_srodku)
+                        || ( pocz_s.plusSeconds(i).compareTo(fragmenty[j][0]) == 0  && pocz_s.plusSeconds(i+1).compareTo(fragmenty[j][1]) == 1 && !w_srodku )
+                        || ( pocz_s.plusSeconds(i).compareTo(fragmenty[j][0]) == 1 && pocz_s.plusSeconds(i+1).compareTo(fragmenty[j][1]) == 1 && !w_srodku) ) {
                     y[i] = 0.0f;
                 }
+                else  {
+                    y[i] = 1.0f;
+                    w_srodku = true;
+                }
+
             }
+            Log.i(TAG,i+", x =  "+x[i]+"y = "+y[i]);
+
         }
-        BarEntry be = new BarEntry(y,xIndex);
 
-        List<BarEntry> list_be = new ArrayList<BarEntry>();
-        list_be.add(be);
-        BarDataSet ds = new BarDataSet(list_be,label);
-
-        BarData d = new BarData(x,ds);
-        mChart.setData(d);
-
+        List<BarEntry> vals = new ArrayList<BarEntry>();
+        ArrayList<String> xVals = new ArrayList<String>();
+        for(int k=0;k<diff_s;k++)
+        {
+            //Log.i(TAG,"x[ = "+k+"] = "+x[k]);
+            BarEntry e = new BarEntry(y[k],x[k]);
+            vals.add(e);
+            xVals.add(" "+k);
+        }
+        BarDataSet set1 = new BarDataSet(vals, " ");
+        set1.setAxisDependency(AxisDependency.LEFT);
+        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        dataSets.add(set1);
+        YAxis lyax = mChart.getAxisLeft();
+        YAxis ryax = mChart.getAxisRight();
+        XAxis xax = mChart.getXAxis();
+        lyax.setAxisMaxValue(2.0f);
+        ryax.setAxisMaxValue(1.5f);
+        set1.setDrawValues(false);
+        lyax.setDrawLabels(false);
+        ryax.setDrawLabels(false);
+        mChart.getLegend().setEnabled(false);
+        mChart.setDescription("");
+        BarData data = new BarData(xVals, dataSets);
+        mChart.setData(data);
+        mChart.invalidate();
     }
 
 }
