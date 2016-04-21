@@ -29,7 +29,6 @@
             android:name=".RecordService"
             android:enabled="true"
             android:exported="false" />
-
         <service
             android:name=".SilenceRemovalService"
             android:enabled="true"
@@ -48,7 +47,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pl.gasior.analizasnu.ui.MainActivity" />
         </activity>
-
+        <activity android:name=".ui.GraphActivity"></activity>
     </application>
 
 </manifest>

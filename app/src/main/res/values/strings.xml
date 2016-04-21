@@ -11,4 +11,5 @@
     <string name="record_hello">record hello</string>
     <string name="listen_hello">listen hello</string>
     <string name="title_activity_dream_detail">DreamDetailActivity</string>
+    <string name="title_activity_graph">GraphActivity</string>
 </resources>
