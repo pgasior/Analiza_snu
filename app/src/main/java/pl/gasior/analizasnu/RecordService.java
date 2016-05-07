@@ -106,7 +106,7 @@ public class RecordService extends Service {
     }
 
     private String getCurrentSQLIteDateAsString() {
-        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 
     public void startTarsosWithSilenceRemoval() {
