@@ -9,11 +9,15 @@ import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
-import be.tarsos.dsp.AudioDispatcher;
-import be.tarsos.dsp.SilenceDetector;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalProgessEvent;
+import be.tarsos.dsp.AudioDispatcher;
+
 import pl.gasior.analizasnu.db.DreamListContract;
+import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
 import pl.gasior.analizasnu.tarsosExtensions.AudioDispatcherFactory;
 import pl.gasior.analizasnu.tarsosExtensions.CustomFFMPEGLocator;
@@ -22,7 +26,6 @@ import pl.gasior.analizasnu.tarsosExtensions.SilenceRemovalFinishedReporter;
 import pl.gasior.analizasnu.tarsosExtensions.SlicerProcessor;
 import pl.gasior.analizasnu.tarsosExtensions.TimeReporter;
 import pl.gasior.analizasnu.ui.DreamDetailActivity;
-import pl.gasior.analizasnu.ui.MainActivity;
 
 public class SilenceRemovalService extends Service {
 
@@ -35,6 +38,7 @@ public class SilenceRemovalService extends Service {
     long dreamId;
     double calibrationLevel;
     Thread dbWriterThread;
+    Date startDate;
     
     public SilenceRemovalService() {
     }
@@ -55,17 +59,28 @@ public class SilenceRemovalService extends Service {
 
     }
 
-    private void getDreamIdAndCalibration(String filename) {
+    private void getDreamInformation(String filename) {
         Log.i(TAG,filename);
         DreamListDbHelper helper = new DreamListDbHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
-        String selection = DreamListContract.DreamEntry.TABLE_NAME+"."+ DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME+" = ?";
-        Cursor c = db.query(DreamListContract.DreamEntry.TABLE_NAME,new String[] {
-            DreamListContract.DreamEntry._ID, DreamListContract.DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL},
+        String selection = DreamEntry.TABLE_NAME+"."+ DreamEntry.COLUMN_NAME_AUDIO_FILENAME+" = ?";
+        String projection[] = new String[] {
+                DreamEntry._ID,
+                DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL,
+                DreamEntry.COLUMN_NAME_DATE_START
+        };
+        Cursor c = db.query(DreamEntry.TABLE_NAME,projection,
                 selection,new String[] {filename},null,null,null);
         c.moveToFirst();
-        dreamId = c.getLong(c.getColumnIndex(DreamListContract.DreamEntry._ID));
-        calibrationLevel = Double.parseDouble(c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL)));
+        dreamId = c.getLong(c.getColumnIndex(DreamEntry._ID));
+        calibrationLevel = Double.parseDouble(c.getString(c.getColumnIndex(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL)));
+        String startDateString = c.getString(c.getColumnIndex(DreamEntry.COLUMN_NAME_DATE_START));
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            startDate = format.parse(startDateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -74,7 +89,7 @@ public class SilenceRemovalService extends Service {
 
         makeForeground(filename);
         //startTARSOSDispatcher();
-        getDreamIdAndCalibration(filename);
+        getDreamInformation(filename);
         startSileneceRemoval(filename);
 
         return START_STICKY;
@@ -91,7 +106,7 @@ public class SilenceRemovalService extends Service {
                 getExternalFilesDir(null).getAbsolutePath() + "/" + filename,
                 22050,1024,0);
         audioDispatcher.addAudioProcessor(new TimeReporter(10));
-        audioDispatcher.addAudioProcessor(new SlicerProcessor(calibrationLevel,getExternalFilesDir(null).getAbsolutePath() + "/",filename,audioDispatcher,dreamId));
+        audioDispatcher.addAudioProcessor(new SlicerProcessor(calibrationLevel,getExternalFilesDir(null).getAbsolutePath() + "/",filename,audioDispatcher,dreamId,startDate));
 //        audioDispatcher.addAudioProcessor(new SilenceDetector(-92.0,true));
 //        String newfn = filename.replace(".mp4",".sielnce_removed.aac");
 //        outProcessor = new PipeOutProcessor(audioDispatcher.getFormat(),getExternalFilesDir(null).getAbsolutePath() + "/" +newfn);

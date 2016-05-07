@@ -53,6 +53,11 @@ public class SlicerProcessor implements AudioProcessor {
 
     }
 
+    public SlicerProcessor(double threshold,String path, String filenameBase, AudioDispatcher audioDispatcher, long dreamId, Date startDate) {
+        this(threshold,path, filenameBase, audioDispatcher,  dreamId);
+        this.startCalendar.setTime(startDate);
+    }
+
     @Override
     public boolean process(AudioEvent audioEvent) {
         currentTime = audioEvent.getTimeStamp();
@@ -96,7 +101,7 @@ public class SlicerProcessor implements AudioProcessor {
         sliceStartCalendar.add(Calendar.SECOND,(int)startTimestamp);
         int startMilis = (int)(1000*(startTimestamp-(int)startTimestamp));
         sliceStartCalendar.add(Calendar.MILLISECOND,startMilis);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         dateFormat.setCalendar(sliceStartCalendar);
         String startDateString = dateFormat.format(sliceStartCalendar.getTime());
 
@@ -104,7 +109,7 @@ public class SlicerProcessor implements AudioProcessor {
         sliceEndCalendar.add(Calendar.SECOND,(int)endTimestamp);
         int endMilis = (int)(1000*(endTimestamp-(int)endTimestamp));
         sliceStartCalendar.add(Calendar.MILLISECOND,endMilis);
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         dateFormat.setCalendar(sliceEndCalendar);
         String endDateString = dateFormat.format(sliceEndCalendar.getTime());
 
