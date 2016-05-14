@@ -20,6 +20,7 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -62,7 +63,11 @@ public class DreamCalendarFragment extends Fragment implements LoaderManager.Loa
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-                Log.i(TAG,date.toString());
+                String stringDateStart = simpleSqliteDate(date.getDate());
+                Calendar endCalendar = date.getCalendar();
+                endCalendar.add(Calendar.DAY_OF_MONTH,1);
+                String stringDateEnd = simpleSqliteDate(endCalendar.getTime());
+                ((MainActivity)getActivity()).showDreamsForDateRange(stringDateStart,stringDateEnd);
             }
         });
         getLoaderManager().initLoader(0, null, this);
@@ -99,6 +104,10 @@ public class DreamCalendarFragment extends Fragment implements LoaderManager.Loa
             e.printStackTrace();
         }
         return null;
+    }
+
+    String simpleSqliteDate(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
     private DreamDayDecorator createDecorator(Cursor data) {
