@@ -4,6 +4,7 @@ package pl.gasior.analizasnu.ui;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,6 +34,7 @@ import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
  * create an instance of this fragment.
  */
 public class DreamCalendarFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+    private final String TAG = this.getClass().getName().toString();
     MaterialCalendarView calendarView;
     public DreamCalendarFragment() {
         // Required empty public constructor
@@ -53,8 +56,15 @@ public class DreamCalendarFragment extends Fragment implements LoaderManager.Loa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.i(TAG,"onCreateView");
         View view = inflater.inflate(R.layout.fragment_dream_calendar, container, false);
         calendarView = (MaterialCalendarView)view.findViewById(R.id.calendarView);
+        calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+                Log.i(TAG,date.toString());
+            }
+        });
         getLoaderManager().initLoader(0, null, this);
         return view;
     }
@@ -79,6 +89,7 @@ public class DreamCalendarFragment extends Fragment implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         DreamDayDecorator decorator = createDecorator(data);
         calendarView.addDecorator(decorator);
+        getLoaderManager().destroyLoader(loader.getId());
     }
 
     Date sqliteStringToDate(String dateString) {
