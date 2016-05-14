@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -103,25 +104,33 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment fragment = null;
         Class fragmentClass;
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         switch(id) {
             case R.id.nav_record:
-                fragmentClass = RecordFragment.class;
+                //fragmentClass = RecordFragment.class;
+                fragment = RecordFragment.newInstance();
                 break;
             case R.id.nav_listen_recording:
-                fragmentClass = ListenRecordingFragment.class;
+                //fragmentClass = ListenRecordingFragment.class;
+                fragment = ListenRecordingFragment.newInstance();
+                break;
+            case R.id.nav_calendar_view:
+                //fragmentClass = DreamCalendarFragment.class;
+                fragment = DreamCalendarFragment.newInstance();
                 break;
             default:
-                fragmentClass = RecordFragment.class;
+                //fragmentClass = RecordFragment.class;
+                fragment = RecordFragment.newInstance();
         }
 
-        try {
-            fragment = (Fragment)fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            fragment = (Fragment)fragmentClass.newInstance();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent,fragment).commit();
+
+        ft.replace(R.id.flContent,fragment).commit();
         Log.i("Main","Ustawilem fragment");
         item.setChecked(true);
         setTitle(item.getTitle());
@@ -143,6 +152,12 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void showDreamsForDateRange(String dateStart, String dateEnd) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment fragment = ListenRecordingFragment.newInstance(dateStart,dateEnd);
+        ft.replace(R.id.flContent,fragment).addToBackStack(null).commit();
     }
 
     @Override

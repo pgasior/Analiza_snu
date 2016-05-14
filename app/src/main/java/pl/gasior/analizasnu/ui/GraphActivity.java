@@ -215,7 +215,6 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         XAxis xax = mChart.getXAxis();
         lyax.setAxisMaxValue(1.0f); //2.0f
         ryax.setEnabled(false);
-        set1.setDrawValues(false);
         mChart.getLegend().setEnabled(false);
         mChart.setDescription("");
         BarData data = new BarData(xVals, dataSets);

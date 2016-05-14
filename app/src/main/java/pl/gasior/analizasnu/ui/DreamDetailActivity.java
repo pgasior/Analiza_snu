@@ -292,6 +292,11 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(TAG,"Load finished");
         adapter.swapCursor(data);
+        if(data.getCount()>0){
+            graphButton.setEnabled(true);
+        } else {
+            graphButton.setEnabled(false);
+        }
     }
 
     @Override

@@ -3,8 +3,6 @@ package pl.gasior.analizasnu;
 import android.app.Application;
 import android.content.Context;
 
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
@@ -15,12 +13,8 @@ import net.danlew.android.joda.JodaTimeAndroid;
  */
 @ReportsCrashes(mailTo = "analizasnu.bledy@gmail.com")
 public class MyApplication extends Application {
-//    public static RefWatcher getRefWatcher(Context context) {
-//        MyApplication application = (MyApplication) context.getApplicationContext();
-//        return application.refWatcher;
-//    }
 
-    private RefWatcher refWatcher;
+
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -31,6 +25,5 @@ public class MyApplication extends Application {
     @Override public void onCreate() {
         super.onCreate();
         JodaTimeAndroid.init(this);
-        //refWatcher = LeakCanary.install(this);
     }
 }
