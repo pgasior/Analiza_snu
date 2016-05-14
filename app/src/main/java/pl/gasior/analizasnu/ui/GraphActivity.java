@@ -207,12 +207,13 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         }
         BarDataSet set1 = new BarDataSet(vals, " ");
         set1.setAxisDependency(AxisDependency.LEFT);
+        set1.setBarSpacePercent(0);
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(set1);
         YAxis lyax = mChart.getAxisLeft();
         YAxis ryax = mChart.getAxisRight();
         XAxis xax = mChart.getXAxis();
-        lyax.setAxisMaxValue(2.0f);
+        lyax.setAxisMaxValue(1.0f); //2.0f
         ryax.setEnabled(false);
         mChart.getLegend().setEnabled(false);
         mChart.setDescription("");
