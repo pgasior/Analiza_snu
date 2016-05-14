@@ -10,6 +10,10 @@
             android:id="@+id/nav_listen_recording"
             android:icon="@drawable/ic_hearing"
             android:title="Zobacz nagrania" />
+        <item
+            android:id="@+id/nav_calendar_view"
+            android:icon="@drawable/ic_hearing"
+            android:title="Kalendarz" />
         <!--<item-->
             <!--android:id="@+id/nav_camera"-->
             <!--android:icon="@drawable/ic_menu_camera"-->

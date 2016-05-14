@@ -110,6 +110,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_listen_recording:
                 fragmentClass = ListenRecordingFragment.class;
                 break;
+            case R.id.nav_calendar_view:
+                fragmentClass = DreamCalendarFragment.class;
+                break;
             default:
                 fragmentClass = RecordFragment.class;
         }
