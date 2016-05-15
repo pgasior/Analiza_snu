@@ -97,4 +97,13 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/stopRecordButton"
         android:layout_toEndOf="@+id/stopRecordButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/metadataButton"
+        android:layout_below="@+id/textView6"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
