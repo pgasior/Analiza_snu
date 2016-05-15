@@ -21,6 +21,7 @@ import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.io.android.AndroidFFMPEGLocator;
 
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
+import pl.gasior.analizasnu.EventBusPOJO.RecordingFinishedEvent;
 import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
 import pl.gasior.analizasnu.tarsosExtensions.AudioDispatcherFactory;
@@ -194,6 +195,7 @@ public class RecordService extends Service {
 //        }
 //        ContentValues
 //        db.close();
+        EventBus.getDefault().post(new RecordingFinishedEvent(recordingDate+EXTENSION));
         stopForeground(true);
     }
 

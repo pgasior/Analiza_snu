@@ -19,6 +19,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import pl.gasior.analizasnu.EventBusPOJO.CalibrationEvent;
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
+import pl.gasior.analizasnu.EventBusPOJO.RecordingFinishedEvent;
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.RecordService;
 
@@ -99,6 +100,7 @@ public class RecordFragment extends Fragment {
                 Intent intent = new Intent(getActivity(),RecordService.class);
                 getActivity().stopService(intent);
                 updateState();
+
             }
         });
         tv = (TextView)view.findViewById(R.id.textView2);
@@ -183,6 +185,13 @@ public class RecordFragment extends Fragment {
     public void calibrationEventHandler(CalibrationEvent ev) {
         calibrationLevel = ev.getCalibrationValue();
         tvBackgroundLevel.setText(String.valueOf(calibrationLevel));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void recordFinishedHandler(RecordingFinishedEvent ev) {
+        Intent intent = new Intent(getActivity(),DreamMetadataEditActivity.class);
+        intent.putExtra("filename",ev.getFilename());
+        startActivity(intent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
