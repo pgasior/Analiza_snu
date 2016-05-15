@@ -130,6 +130,9 @@ public class RecordService extends Service {
         values.put(DreamEntry.COLUMN_NAME_AUDIO_FILENAME,recordingDate+EXTENSION);
         values.put(DreamEntry.COLUMN_NAME_CALIBRATION_LEVEL,String.valueOf(calibrationLevel));
         values.put(DreamEntry.COLUMN_NAME_DATE_START,getCurrentSQLIteDateAsString());
+        values.put(DreamEntry.COLUMN_NAME_METADATA_NAME,"");
+        values.put(DreamEntry.COLUMN_NAME_METADATA_RATING,0);
+        values.put(DreamEntry.COLUMN_NAME_METADATA_DESCRIPTION,"");
         dreamId = db.insert(DreamEntry.TABLE_NAME, null, values);
         db.close();
     }
