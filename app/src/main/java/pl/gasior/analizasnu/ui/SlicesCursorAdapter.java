@@ -2,6 +2,7 @@ package pl.gasior.analizasnu.ui;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -57,7 +58,7 @@ public class SlicesCursorAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder)view.getTag();
         final int id = cursor.getInt(cursor.getColumnIndex(DreamSliceEntry._ID));
         final int verdict = cursor.getInt(cursor.getColumnIndex(DreamSliceEntry.COLUMN_USER_VERDICT));
-        updateViewColor(view,verdict);
+        updateViewColor(context, view,verdict);
         String filename = cursor.getString(cursor.getColumnIndex(DreamSliceEntry.COLUMN_SLICE_FILENAME));
         viewHolder.name.setText(filename);
         //viewHolder.button.setTag(1,verdict);
@@ -84,12 +85,19 @@ public class SlicesCursorAdapter extends CursorAdapter {
         });
     }
 
-    private void updateViewColor(View view, int verdict) {
+    private void updateViewColor(Context context, View view, int verdict) {
         Log.i(TAG,"verdict:"+verdict);
         if(verdict==DreamSliceEntry.VERDICT_GOOD) {
             view.setBackgroundColor(Color.GREEN);
         } else if(verdict==DreamSliceEntry.VERDICT_BAD) {
             view.setBackgroundColor(Color.RED);
+        } else {
+            TypedArray array = context.getTheme().obtainStyledAttributes(new int[] {
+                    android.R.attr.colorBackground,
+            });
+            int backgroundColor = array.getColor(0, 0xFF00FF);
+            view.setBackgroundColor(backgroundColor);
+            array.recycle();
         }
     }
 
