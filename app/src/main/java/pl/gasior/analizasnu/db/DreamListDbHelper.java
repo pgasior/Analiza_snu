@@ -10,7 +10,7 @@ import pl.gasior.analizasnu.db.DreamListContract.DreamSliceEntry;
  * Created by Piotrek on 04.04.2016.
  */
 public class DreamListDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "DreamsList.db";
 
     public DreamListDbHelper(Context context) {
@@ -42,6 +42,7 @@ public class DreamListDbHelper extends SQLiteOpenHelper {
                         DreamSliceEntry.COLUMN_SLICE_FILENAME + TEXT_TYPE + COMMA_SEP +
                         DreamSliceEntry.COLUMN_SLICE_START + TEXT_TYPE + COMMA_SEP +
                         DreamSliceEntry.COLUMN_SLICE_END + TEXT_TYPE + COMMA_SEP +
+                        DreamSliceEntry.COLUMN_USER_VERDICT + " INTEGER DEFAULT 0" + COMMA_SEP +
                         " FOREIGN KEY (" + DreamSliceEntry.COLUMN_DREAM_KEY + ") REFERENCES " +
                         DreamEntry.TABLE_NAME + " (" + DreamEntry._ID + ") ON DELETE CASCADE " +
                 ")";

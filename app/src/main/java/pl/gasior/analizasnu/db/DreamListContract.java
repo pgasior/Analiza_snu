@@ -53,6 +53,7 @@ public class DreamListContract {
         public static final String COLUMN_SLICE_FILENAME = "slice_filename";
         public static final String COLUMN_SLICE_START = "slice_start";
         public static final String COLUMN_SLICE_END = "slice_end";
+        public static final String COLUMN_USER_VERDICT = "user_verdict";
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_DREAM_SLICES;
@@ -60,6 +61,10 @@ public class DreamListContract {
         public static Uri buildDreamSliceUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI,id);
         }
+
+        public static final int VERDICT_UTOUCHED = 0;
+        public static final int VERDICT_GOOD = 1;
+        public static final int VERDICT_BAD = 2;
     }
 
 }

@@ -35,10 +35,12 @@ import java.io.File;
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalFinishedEvent;
 import pl.gasior.analizasnu.EventBusPOJO.SilenceRemovalProgessEvent;
+import pl.gasior.analizasnu.EventBusPOJO.SlicesChangedEvent;
 import pl.gasior.analizasnu.EventBusPOJO.TarsosPlayFinishedEvent;
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.SilenceRemovalService;
 import pl.gasior.analizasnu.db.DreamListContract;
+import pl.gasior.analizasnu.db.DreamListContract.DreamSliceEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
 
 public class DreamDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
@@ -57,7 +59,8 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     private TextView tvProcessed;
     private ListView slicesListView;
     private Button metadataButton;
-    SimpleCursorAdapter adapter;
+    //SimpleCursorAdapter adapter;
+    SlicesCursorAdapter slicesCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,18 +125,20 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
         }
 
         slicesListView = (ListView)findViewById(R.id.slicesListView);
-        String[] fromColumns = {DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME};
+        String[] fromColumns = {DreamSliceEntry.COLUMN_SLICE_FILENAME};
         int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
-        adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_list_item_1,null,
-                fromColumns,toViews,0);
-        slicesListView.setAdapter(adapter);
+//        adapter = new SimpleCursorAdapter(this,
+//                android.R.layout.simple_list_item_1,null,
+//                fromColumns,toViews,0);
+//        slicesListView.setAdapter(adapter);
+        slicesCursorAdapter = new SlicesCursorAdapter(this,null,0);
+        slicesListView.setAdapter(slicesCursorAdapter);
 
         slicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor c = (Cursor) parent.getAdapter().getItem(position);
-                String filename = c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME));
+                String filename = c.getString(c.getColumnIndex(DreamSliceEntry.COLUMN_SLICE_FILENAME));
                 if(playFragment.isPlaying()) {
                     playFragment.stopTarsos();
                 }
@@ -175,8 +180,8 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
         Log.i(TAG,"deleteOldSlices");
         Uri uri = DreamListContract.BASE_CONTENT_URI.buildUpon().appendPath(DreamListContract.PATH_DREAM_SLICES).build();
         String[] projection = new String[] {
-                DreamListContract.DreamSliceEntry.TABLE_NAME+"."+DreamListContract.DreamSliceEntry._ID,
-                DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME
+                DreamSliceEntry.TABLE_NAME+"."+ DreamSliceEntry._ID,
+                DreamSliceEntry.COLUMN_SLICE_FILENAME
         };
         String selection= DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME+" = ?";
         String[] selectionArgs= new String[] {filename};
@@ -184,15 +189,15 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
         //c.moveToFirst();
         SQLiteDatabase db = new DreamListDbHelper(this).getWritableDatabase();
         while(c.moveToNext()) {
-            long id = c.getLong(c.getColumnIndex(DreamListContract.DreamSliceEntry._ID));
-            String filename = c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME));
+            long id = c.getLong(c.getColumnIndex(DreamSliceEntry._ID));
+            String filename = c.getString(c.getColumnIndex(DreamSliceEntry.COLUMN_SLICE_FILENAME));
             Log.i(TAG,"Filename: "+filename+"  id: "+id);
             //Log.i(TAG,"Filename: "+filename);
             File f = new File(getExternalFilesDir(null).getAbsolutePath(),filename);
             if(f.exists()) {
                 f.delete();
             }
-            db.delete(DreamListContract.DreamSliceEntry.TABLE_NAME, DreamListContract.DreamSliceEntry._ID+"=?",new String[] {String.valueOf(id)});
+            db.delete(DreamSliceEntry.TABLE_NAME, DreamSliceEntry._ID+"=?",new String[] {String.valueOf(id)});
         }
         c.close();
         db.close();
@@ -234,6 +239,11 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
         Intent intent = new Intent(this,SilenceRemovalService.class);
         stopService(intent);
         updateUi();
+        getSupportLoaderManager().restartLoader(0,null,this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleSliceChanged(SlicesChangedEvent ev) {
         getSupportLoaderManager().restartLoader(0,null,this);
     }
 
@@ -291,8 +301,9 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = DreamListContract.BASE_CONTENT_URI.buildUpon().appendPath(DreamListContract.PATH_DREAM_SLICES).build();
         String[] projection = new String[] {
-                DreamListContract.DreamSliceEntry.TABLE_NAME+"."+DreamListContract.DreamSliceEntry._ID,
-                DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME
+                DreamSliceEntry.TABLE_NAME+"."+ DreamSliceEntry._ID,
+                DreamSliceEntry.COLUMN_SLICE_FILENAME,
+                DreamSliceEntry.COLUMN_USER_VERDICT
         };
         String selection= DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME+" = ?";
         String[] selectionArgs= new String[] {filename};
@@ -302,7 +313,8 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(TAG,"Load finished");
-        adapter.swapCursor(data);
+        //adapter.swapCursor(data);
+        slicesCursorAdapter.swapCursor(data);
         if(data.getCount()>0){
             graphButton.setEnabled(true);
         } else {
@@ -312,6 +324,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.swapCursor(null);
+        //adapter.swapCursor(null);
+        slicesCursorAdapter.swapCursor(null);
     }
 }
