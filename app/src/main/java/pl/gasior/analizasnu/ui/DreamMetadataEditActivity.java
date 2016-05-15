@@ -1,7 +1,9 @@
 package pl.gasior.analizasnu.ui;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -10,12 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.RatingBar;
 
 import pl.gasior.analizasnu.R;
 import pl.gasior.analizasnu.db.DreamListContract;
 import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
+import pl.gasior.analizasnu.db.DreamListDbHelper;
 
 public class DreamMetadataEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -38,6 +42,35 @@ public class DreamMetadataEditActivity extends AppCompatActivity implements Load
         filename = intent.getStringExtra("filename");
         getSupportLoaderManager().initLoader(0, null, this);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.adction_cancel:
+                finish();
+                return true;
+            case R.id.adction_accept:
+                updateMetadata();
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    private void updateMetadata() {
+        DreamListDbHelper helper = new DreamListDbHelper(this);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DreamEntry.COLUMN_NAME_METADATA_NAME,dreamName.getText().toString());
+        cv.put(DreamEntry.COLUMN_NAME_METADATA_RATING,dreamRating.getRating());
+        cv.put(DreamEntry.COLUMN_NAME_METADATA_DESCRIPTION,dreamDescription.getText().toString());
+        String whereClause = DreamEntry.COLUMN_NAME_AUDIO_FILENAME+"=?";
+        String[] whereArgs = new String[] {filename};
+        db.update(DreamEntry.TABLE_NAME,cv,whereClause,whereArgs);
+        db.close();
     }
 
     @Override
