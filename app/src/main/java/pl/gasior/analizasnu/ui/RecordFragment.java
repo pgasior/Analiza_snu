@@ -133,14 +133,6 @@ public class RecordFragment extends Fragment {
             tvCalibrationLevel.setText(String.valueOf(calibrationLevel));
             cbAnalysisDuringRecording.setChecked(savedInstanceState.getBoolean("cbAnalysisDuringRecording"));
         }
-        Button metadataButton = (Button)view.findViewById(R.id.metadataButton);
-        metadataButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),DreamMetadataEditActivity.class);
-                getActivity().startActivity(intent);
-            }
-        });
         updateState();
         return view;
     }
