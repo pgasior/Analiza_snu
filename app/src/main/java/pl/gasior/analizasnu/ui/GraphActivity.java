@@ -165,6 +165,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         x = new int[diff_s + 1];
         int lfrag = 0;
         DateTime[][] fragmenty = new DateTime[diff_s + 1][2];
+
         while (!c.isAfterLast()) {
             fragmenty[c.getPosition()][0] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_START)).substring(0, 19), f);
             fragmenty[c.getPosition()][1] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0, 19), f);
@@ -179,16 +180,17 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         }
             for(int j = 0; j < lfrag; j++)
             {
-
-                Seconds r1 = Seconds.secondsBetween(pocz_s, fragmenty[j][0]);
-                Seconds r2 = Seconds.secondsBetween(fragmenty[j][0], fragmenty[j][1]);
-                int roznica = r1.getSeconds();
-                int rozmiar = r2.getSeconds();
-//
-                for(i = roznica;i<roznica+rozmiar;i++)
+                if(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_USER_VERDICT)) == "0" || c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_USER_VERDICT)) == "1")
                 {
-//                    Log.i(TAG,"we fragm, i = "+i);
-                    y[i]=1;
+                    Seconds r1 = Seconds.secondsBetween(pocz_s, fragmenty[j][0]);
+                    Seconds r2 = Seconds.secondsBetween(fragmenty[j][0], fragmenty[j][1]);
+                    int roznica = r1.getSeconds();
+                    int rozmiar = r2.getSeconds();
+                    //
+                    for (i = roznica; i < roznica + rozmiar; i++) {
+                        //                    Log.i(TAG,"we fragm, i = "+i);
+                        y[i] = 1;
+                    }
                 }
             }
 //        int l;
