@@ -90,6 +90,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
                 DreamListContract.DreamSliceEntry.COLUMN_SLICE_FILENAME,
                 DreamListContract.DreamSliceEntry.COLUMN_SLICE_START,
                 DreamListContract.DreamSliceEntry.COLUMN_SLICE_END,
+                DreamListContract.DreamSliceEntry.COLUMN_USER_VERDICT,
                 DreamListContract.DreamEntry.TABLE_NAME+"."+DreamListContract.DreamEntry._ID,
                 DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME,
                 DreamListContract.DreamEntry.COLUMN_NAME_DATE_START,
@@ -165,10 +166,11 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         x = new int[diff_s + 1];
         int lfrag = 0;
         DateTime[][] fragmenty = new DateTime[diff_s + 1][2];
-
+        int[] verdict = new int[diff_s + 1];
         while (!c.isAfterLast()) {
             fragmenty[c.getPosition()][0] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_START)).substring(0, 19), f);
             fragmenty[c.getPosition()][1] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0, 19), f);
+            verdict[c.getPosition()] = c.getInt(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_USER_VERDICT));
             lfrag++;
             Log.i(TAG, "w while, poczatek fragmentu: " + c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_START)).substring(0, 19) + " koniec: " + c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0, 19));
             c.moveToNext();
@@ -180,7 +182,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         }
             for(int j = 0; j < lfrag; j++)
             {
-                if(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_USER_VERDICT)) == "0" || c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_USER_VERDICT)) == "1")
+                if(verdict[j] == 0 || verdict[j] == 1)
                 {
                     Seconds r1 = Seconds.secondsBetween(pocz_s, fragmenty[j][0]);
                     Seconds r2 = Seconds.secondsBetween(fragmenty[j][0], fragmenty[j][1]);
@@ -216,6 +218,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         YAxis ryax = mChart.getAxisRight();
         XAxis xax = mChart.getXAxis();
         lyax.setAxisMaxValue(1.0f); //2.0f
+        set1.setDrawValues(false);
         ryax.setEnabled(false);
         mChart.getLegend().setEnabled(false);
         mChart.setDescription("");
