@@ -27,6 +27,9 @@ public class DreamListContract {
         public static final String COLUMN_NAME_DATE_START = "date_start";
         public static final String COLUMN_NAME_DATE_END = "date_end";
         public static final String COLUMN_NAME_CALIBRATION_LEVEL= "calibration_level";
+        public static final String COLUMN_NAME_METADATA_NAME="metadataName";
+        public static final String COLUMN_NAME_METADATA_RATING="metadataRating";
+        public static final String COLUMN_NAME_METADATA_DESCRIPTION="metadataDescription";
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_DREAMS;
