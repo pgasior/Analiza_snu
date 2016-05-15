@@ -44,6 +44,7 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
     ListView lv;
     String stringDateStart;
     String stringDateEnd;
+    int dreamId;
 
     public ListenRecordingFragment() {
         // Required empty public constructor

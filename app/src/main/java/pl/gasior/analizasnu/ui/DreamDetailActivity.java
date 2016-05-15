@@ -56,6 +56,7 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     private String filename;
     private TextView tvProcessed;
     private ListView slicesListView;
+    private Button metadataButton;
     SimpleCursorAdapter adapter;
 
     @Override
@@ -149,6 +150,16 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
                 intent2.putExtra("filename", filename);
                 startActivity(intent2);
                 updateUi();
+            }
+        });
+
+        metadataButton = (Button)findViewById(R.id.metadataButton);
+        metadataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(),DreamMetadataEditActivity.class);
+                intent.putExtra("filename",filename);
+                startActivity(intent);
             }
         });
 
