@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             default:
                 //fragmentClass = RecordFragment.class;
-                fragment = RecordFragment.newInstance();
+                fragment = DreamCalendarFragment.newInstance();
         }
 
 //        try {

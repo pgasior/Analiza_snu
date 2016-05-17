@@ -12,82 +12,106 @@
     tools:context="pl.gasior.analizasnu.ui.DreamDetailActivity"
     tools:showIn="@layout/activity_dream_detail">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Odtwarzaj"
-        android:id="@+id/startPlayButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Stop"
-        android:id="@+id/stopPlayButton"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/startPlayButton"
-        android:layout_toEndOf="@+id/startPlayButton" />
+        android:gravity="center">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Analiza"
-        android:id="@+id/analysisButton"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/stopPlayButton"
-        android:layout_toEndOf="@+id/stopPlayButton" />
+        <Button
+            android:id="@+id/startPlayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:width="140dp"
+            android:background="@color/green"
+            android:text="Odtwarzaj"
+            android:drawableLeft="@drawable/ic_play_arrow_black"
+            android:drawablePadding="-10dp"
+            />
 
-    <Button
-        android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/stopPlayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toEndOf="@+id/startPlayButton"
+            android:layout_toRightOf="@+id/startPlayButton"
+            android:width="140dp"
+            android:background="@color/red"
+            android:text="Stop"
+            android:drawableLeft="@drawable/ic_stop_black"
+            android:drawablePadding="-10dp"
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Wykres"
-        android:id="@+id/graphButton"
-        android:layout_below="@+id/stopPlayButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="false"/>
+        android:layout_below="@+id/linearLayout"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/analysisButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Analiza"
+
+            />
+
+        <Button
+            android:id="@+id/graphButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wykres" />
+
+        <Button
+            android:id="@+id/metadataButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="Dane o śnie" />
+
+    </LinearLayout>
+
 
     <ProgressBar
+        android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:layout_below="@+id/graphButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/linearLayout2"
         android:max="100"
         android:progress="50" />
 
     <ListView
+        android:id="@+id/slicesListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/slicesListView"
-        android:layout_below="@+id/textView3"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:focusable="false"/>
+        android:layout_below="@+id/textView3"
+        android:focusable="false" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
         android:id="@+id/textView3"
-        android:layout_below="@+id/progressBar"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dane o śnie"
-        android:id="@+id/metadataButton"
-        android:layout_above="@+id/progressBar"
-        android:layout_toRightOf="@+id/graphButton"
-        android:layout_toEndOf="@+id/graphButton" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/progressBar"
+        tools:text="New Text" />
 
 </RelativeLayout>

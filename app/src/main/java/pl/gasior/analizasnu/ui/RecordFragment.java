@@ -103,7 +103,7 @@ public class RecordFragment extends Fragment {
 
             }
         });
-        tv = (TextView)view.findViewById(R.id.textView2);
+        tv = (TextView)view.findViewById(R.id.timeTextView);
         tvBackgroundLevel = (TextView)view.findViewById(R.id.tvBackgroundLevel);
         tvCalibrationLevel = (TextView)view.findViewById(R.id.tvCalibrationLevel);
         calibrationButton = (Button)view.findViewById(R.id.calibrationButton);
