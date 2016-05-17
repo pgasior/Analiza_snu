@@ -118,6 +118,9 @@ public class MainActivity extends AppCompatActivity
                 //fragmentClass = DreamCalendarFragment.class;
                 fragment = DreamCalendarFragment.newInstance();
                 break;
+            case R.id.nav_manage:
+                fragment = ConfigFragment.newInstance();
+                break;
             default:
                 //fragmentClass = RecordFragment.class;
                 fragment = DreamCalendarFragment.newInstance();

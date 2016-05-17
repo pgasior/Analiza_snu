@@ -121,6 +121,7 @@ public class RecordFragment extends Fragment {
             public void onClick(View v) {
                 calibrationDone=true;
                 calibrationRetainingFragment.stopCalibration();
+                //todo odczyt z konfiguracji
                 calibrationLevel+=2.0;
                 tvCalibrationLevel.setText(String.valueOf(calibrationLevel));
                 updateState();
