@@ -46,14 +46,15 @@
     </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/timeTextView"
         android:layout_alignParentTop="true"
         android:text="00:00:00"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="80sp"
-        android:layout_centerHorizontal="true"/>
+        android:textSize="@dimen/time_text_view_text_size"
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
 
     <Button
         android:layout_width="wrap_content"

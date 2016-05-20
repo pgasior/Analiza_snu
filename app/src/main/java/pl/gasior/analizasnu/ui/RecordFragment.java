@@ -17,6 +17,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.DecimalFormat;
+
 import pl.gasior.analizasnu.EventBusPOJO.CalibrationEvent;
 import pl.gasior.analizasnu.EventBusPOJO.EventTimeElapsed;
 import pl.gasior.analizasnu.EventBusPOJO.RecordingFinishedEvent;
@@ -123,7 +125,9 @@ public class RecordFragment extends Fragment {
                 calibrationRetainingFragment.stopCalibration();
                 //todo odczyt z konfiguracji
                 calibrationLevel+=2.0;
-                tvCalibrationLevel.setText(String.valueOf(calibrationLevel));
+                DecimalFormat df=new DecimalFormat("0.00");
+                String format = df.format(calibrationLevel);
+                tvCalibrationLevel.setText(String.valueOf(format));
                 updateState();
             }
         });
@@ -185,7 +189,9 @@ public class RecordFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void calibrationEventHandler(CalibrationEvent ev) {
         calibrationLevel = ev.getCalibrationValue();
-        tvBackgroundLevel.setText(String.valueOf(calibrationLevel));
+        DecimalFormat df=new DecimalFormat("0.00");
+        String format = df.format(calibrationLevel);
+        tvBackgroundLevel.setText(String.valueOf(format));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
