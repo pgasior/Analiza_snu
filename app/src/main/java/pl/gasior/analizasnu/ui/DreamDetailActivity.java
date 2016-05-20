@@ -43,7 +43,8 @@ import pl.gasior.analizasnu.db.DreamListContract;
 import pl.gasior.analizasnu.db.DreamListContract.DreamSliceEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
 
-public class DreamDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class DreamDetailActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>, ConfirmAnalysisDialogFragment.ConfirmAnalysisDialogListener{
 
     private final String TAG = this.getClass().getName();
 
@@ -109,12 +110,8 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
         analysisButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removingSilence=!removingSilence;
-                Intent intent = new Intent(getApplicationContext(),SilenceRemovalService.class);
-                intent.putExtra("filename",filename);
-                deleteOldSlices();
-                startService(intent);
-                updateUi();
+                ConfirmAnalysisDialogFragment dialog = new ConfirmAnalysisDialogFragment();
+                dialog.show(getSupportFragmentManager(),"cnfirmDialog");
             }
         });
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
@@ -326,5 +323,20 @@ public class DreamDetailActivity extends AppCompatActivity implements LoaderMana
     public void onLoaderReset(Loader<Cursor> loader) {
         //adapter.swapCursor(null);
         slicesCursorAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onConfirmAnalysisDialogPositiveClick() {
+        removingSilence=!removingSilence;
+        Intent intent = new Intent(getApplicationContext(),SilenceRemovalService.class);
+        intent.putExtra("filename",filename);
+        deleteOldSlices();
+        startService(intent);
+        updateUi();
+    }
+
+    @Override
+    public void onConfirmAnalysisDialogNegativeClick() {
+
     }
 }
