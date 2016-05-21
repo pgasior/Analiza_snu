@@ -68,6 +68,7 @@ public class SliceDbWriterRunnable implements Runnable{
             }
         }
         EventBus.getDefault().unregister(this);
+        db.close();
 
     }
 }

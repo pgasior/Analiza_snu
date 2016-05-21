@@ -81,6 +81,7 @@ public class SilenceRemovalService extends Service {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        db.close();
     }
 
     @Override
