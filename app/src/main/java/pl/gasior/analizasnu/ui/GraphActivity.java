@@ -2,6 +2,7 @@ package pl.gasior.analizasnu.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -68,8 +69,8 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
- //       Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
- //       setSupportActionBar(toolbar);
+        //       Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //       setSupportActionBar(toolbar);
 
 
 
@@ -167,6 +168,8 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         int lfrag = 0;
         DateTime[][] fragmenty = new DateTime[diff_s + 1][2];
         int[] verdict = new int[diff_s + 1];
+        int[] datasetnr = new int[diff_s + 1];
+        Arrays.fill(datasetnr, 2);
         while (!c.isAfterLast()) {
             fragmenty[c.getPosition()][0] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_START)).substring(0, 19), f);
             fragmenty[c.getPosition()][1] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0, 19), f);
@@ -180,49 +183,74 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         {
             x[i] = i;
         }
-            for(int j = 0; j < lfrag; j++)
+        for(int j = 0; j < lfrag; j++)
+        {
+            Log.i(TAG,"j = "+j +", verdict[j] =  "+verdict[j]);
+            if(verdict[j] == 0 || verdict[j] == 1)
             {
-                if(verdict[j] == 0 || verdict[j] == 1)
-                {
-                    Seconds r1 = Seconds.secondsBetween(pocz_s, fragmenty[j][0]);
-                    Seconds r2 = Seconds.secondsBetween(fragmenty[j][0], fragmenty[j][1]);
-                    int roznica = r1.getSeconds();
-                    int rozmiar = r2.getSeconds();
-                    //
-                    for (i = roznica; i < roznica + rozmiar; i++) {
-                        //                    Log.i(TAG,"we fragm, i = "+i);
-                        y[i] = 1;
+                Seconds r1 = Seconds.secondsBetween(pocz_s, fragmenty[j][0]);
+                Seconds r2 = Seconds.secondsBetween(fragmenty[j][0], fragmenty[j][1]);
+                int roznica = r1.getSeconds();
+                int rozmiar = r2.getSeconds();
+                //
+                for (i = roznica; i < roznica + rozmiar; i++) {
+                    //                    Log.i(TAG,"we fragm, i = "+i);
+                    if (verdict[j] == 1)
+                    {
+                        datasetnr[i] = 1;
                     }
+                    else if(verdict[j] == 0)
+                    {
+                        datasetnr[i] = 0;
+                    }
+                    y[i] = 1;
                 }
             }
+        }
 //        int l;
 //        for(l = 0;l<diff_s;l++)
 //        {
 //            Log.i(TAG,l+", x =  "+x[l]+"y = "+y[l]);
 //        }
         List<BarEntry> vals = new ArrayList<BarEntry>();
+        List<BarEntry> vals2 = new ArrayList<BarEntry>();
         ArrayList<String> xVals = new ArrayList<String>();
         for(int k=0;k<diff_s;k++)
         {
-            //Log.i(TAG,"x[ = "+k+"] = "+x[k]);
+            Log.i(TAG,"y["+k+"] = "+y[k]);
+            Log.i(TAG,"dataset = "+datasetnr[k]);
             BarEntry e = new BarEntry(y[k],x[k]);
-            vals.add(e);
+            if(datasetnr[k] == 0)
+            {
+                vals.add(e);
+            }
+            else if(datasetnr[k] == 1)
+            {
+                vals2.add(e);
+            }
             xVals.add(" "+k);
         }
-        BarDataSet set1 = new BarDataSet(vals, " ");
+        BarDataSet set1 = new BarDataSet(vals, "no verdict");
+        BarDataSet set2 = new BarDataSet(vals2, "positive verdict");
+        set2.setColor(Color.rgb(0,255,0));
         set1.setAxisDependency(AxisDependency.LEFT);
         set1.setBarSpacePercent(0);
+        set2.setAxisDependency(AxisDependency.LEFT);
+        set2.setBarSpacePercent(0);
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(set1);
+        dataSets.add(set2);
         YAxis lyax = mChart.getAxisLeft();
         YAxis ryax = mChart.getAxisRight();
         XAxis xax = mChart.getXAxis();
         lyax.setAxisMaxValue(1.0f); //2.0f
         set1.setDrawValues(false);
+        set2.setDrawValues(false);
         ryax.setEnabled(false);
         mChart.getLegend().setEnabled(false);
         mChart.setDescription("");
         BarData data = new BarData(xVals, dataSets);
+        data.setGroupSpace(0);
         mChart.setData(data);
         mChart.invalidate();
     }
