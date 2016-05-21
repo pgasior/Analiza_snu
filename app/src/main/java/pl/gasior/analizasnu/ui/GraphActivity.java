@@ -213,44 +213,47 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
 //            Log.i(TAG,l+", x =  "+x[l]+"y = "+y[l]);
 //        }
         List<BarEntry> vals = new ArrayList<BarEntry>();
-        List<BarEntry> vals2 = new ArrayList<BarEntry>();
         ArrayList<String> xVals = new ArrayList<String>();
         for(int k=0;k<diff_s;k++)
         {
             Log.i(TAG,"y["+k+"] = "+y[k]);
             Log.i(TAG,"dataset = "+datasetnr[k]);
             BarEntry e = new BarEntry(y[k],x[k]);
-            if(datasetnr[k] == 0)
-            {
-                vals.add(e);
-            }
-            else if(datasetnr[k] == 1)
-            {
-                vals2.add(e);
-            }
+            vals.add(e);
             xVals.add(" "+k);
         }
-        BarDataSet set1 = new BarDataSet(vals, "no verdict");
-        BarDataSet set2 = new BarDataSet(vals2, "positive verdict");
-        set2.setColor(Color.rgb(0,255,0));
+        BarDataSet set1 = new BarDataSet(vals, " ");
+        int[] colors = new int[diff_s+1];
+        //Arrays.fill(colors, Color.WHITE);
+        for(int k = 0;k<diff_s;k++)
+        {
+            if(datasetnr[k] == 0){
+                colors[k] = Color.BLUE;
+            }
+            else if(datasetnr[k] == 1){
+                colors[k] = Color.GREEN;
+            }
+            else
+            {
+                colors[k] = Color.WHITE;
+            }
+            Log.i(TAG,"color["+k+"]= "+datasetnr[k]);
+        }
         set1.setAxisDependency(AxisDependency.LEFT);
         set1.setBarSpacePercent(0);
-        set2.setAxisDependency(AxisDependency.LEFT);
-        set2.setBarSpacePercent(0);
+        set1.setColors(colors);
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(set1);
-        dataSets.add(set2);
         YAxis lyax = mChart.getAxisLeft();
         YAxis ryax = mChart.getAxisRight();
         XAxis xax = mChart.getXAxis();
         lyax.setAxisMaxValue(1.0f); //2.0f
         set1.setDrawValues(false);
-        set2.setDrawValues(false);
         ryax.setEnabled(false);
         mChart.getLegend().setEnabled(false);
         mChart.setDescription("");
         BarData data = new BarData(xVals, dataSets);
-        data.setGroupSpace(0);
+//        data.setGroupSpace(0);
         mChart.setData(data);
         mChart.invalidate();
     }
