@@ -1,5 +1,6 @@
 package pl.gasior.analizasnu.ui;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -101,7 +102,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         int id = item.getItemId();
+        if(id==R.id.nav_manage) {
+            Intent intent = new Intent(this,SettingsActivity.class);
+            startActivity(intent);
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+        }
         Fragment fragment = null;
         Class fragmentClass;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -118,9 +126,9 @@ public class MainActivity extends AppCompatActivity
                 //fragmentClass = DreamCalendarFragment.class;
                 fragment = DreamCalendarFragment.newInstance();
                 break;
-            case R.id.nav_manage:
-                fragment = ConfigFragment.newInstance();
-                break;
+//            case R.id.nav_manage:
+//                fragment = ConfigFragment.newInstance();
+//                break;
             default:
                 //fragmentClass = RecordFragment.class;
                 fragment = DreamCalendarFragment.newInstance();
@@ -152,7 +160,7 @@ public class MainActivity extends AppCompatActivity
 //
 //        }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
