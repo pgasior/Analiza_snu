@@ -6,4 +6,12 @@
     <color name="red">#f44336</color>
     <color name="white">#FFFFFF</color>
     <color name="green">#4CAF50</color>
+
+
+    <color name="dark_green">#00602B</color>
+    <color name="one_star">#7B0100</color>
+    <color name="two_stars">#EA0001</color>
+    <color name="three_stars">#FA9924</color>
+    <color name="four_stars">#FEC923</color>
+    <color name="five_stars">#92D14F</color>
 </resources>

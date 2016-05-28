@@ -2,26 +2,36 @@ package pl.gasior.analizasnu.ui;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.RatingBar;
 
 import pl.gasior.analizasnu.R;
+import pl.gasior.analizasnu.RatingBarColorPicker;
 import pl.gasior.analizasnu.db.DreamListContract;
 import pl.gasior.analizasnu.db.DreamListContract.DreamEntry;
 import pl.gasior.analizasnu.db.DreamListDbHelper;
 
 public class DreamMetadataEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+
+    private final String TAG = this.getClass().getName().toString();
 
     EditText dreamName;
     EditText dreamDescription;
@@ -38,10 +48,28 @@ public class DreamMetadataEditActivity extends AppCompatActivity implements Load
         dreamName = (EditText)findViewById(R.id.dreamNameEditText);
         dreamDescription = (EditText)findViewById(R.id.dreamDescriptionEditText);
         dreamRating = (RatingBar)findViewById(R.id.dreamRatingBar);
+        dreamRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                setRatingBarColor(ratingBar);
+            }
+        });
+        Log.i(TAG,String.valueOf(dreamRating.getRating()));
         Intent intent = getIntent();
         filename = intent.getStringExtra("filename");
         getSupportLoaderManager().initLoader(0, null, this);
 
+    }
+
+    public void setRatingBarColor(RatingBar ratingBar) {
+        float progress = ratingBar.getProgress();
+        Log.i(TAG,String.valueOf(progress));
+        int color = RatingBarColorPicker.getColorForProgress(progress,this);
+
+
+        LayerDrawable layerDrawable = (LayerDrawable) ratingBar.getProgressDrawable();
+        layerDrawable.getDrawable(1).setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        layerDrawable.getDrawable(2).setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
 
     @Override
