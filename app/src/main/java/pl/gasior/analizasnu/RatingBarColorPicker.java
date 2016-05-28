@@ -28,4 +28,20 @@ public class RatingBarColorPicker {
         }
         return color;
     }
+
+    public static int getStarFromProgress(float progress) {
+        if(progress >=9) {
+            return 5;
+        } else if (progress >=7) {
+            return 4;
+        } else if (progress >=5) {
+            return 3;
+        } else if (progress >=3) {
+            return 2;
+        } else if (progress >=1) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 }
