@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ import pl.gasior.analizasnu.RecordService;
  * create an instance of this fragment.
  */
 public class RecordFragmentAlt extends Fragment {
+
+    private final String TAG = this.getClass().getName();
 
     private OnFragmentInteractionListener mListener;
 
@@ -82,8 +85,11 @@ public class RecordFragmentAlt extends Fragment {
         FragmentManager fm = getActivity().getSupportFragmentManager();
         calibrationRetainingFragment = (CalibrationRetainingFragment)fm.findFragmentByTag("calibrationRetainingFragment");
         if(calibrationRetainingFragment == null) {
+            Log.i(TAG,"Tworze nowy fragment");
             calibrationRetainingFragment = new CalibrationRetainingFragment();
             fm.beginTransaction().add(calibrationRetainingFragment,"calibrationRetainingFragment").commit();
+        } else {
+            Log.i(TAG,"Podlaczylem sie do fragmentu");
         }
         tvUserInstruction = (TextView)view.findViewById(R.id.tvUserInstruction);
         cbAnalysisDuringRecording = (CheckBox)view.findViewById(R.id.cbAnalysisDuringRecording);
