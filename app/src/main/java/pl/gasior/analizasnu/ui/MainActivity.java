@@ -18,7 +18,7 @@ import android.view.MenuItem;
 import pl.gasior.analizasnu.R;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ListenRecordingFragment.OnFragmentInteractionListener, RecordFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ListenRecordingFragment.OnFragmentInteractionListener, RecordFragmentAlt.OnFragmentInteractionListener {
 
     private Toolbar toolbar;
     DrawerLayout drawer;
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity
         if(savedInstanceState==null) {
             navigationView.getMenu().getItem(0).setChecked(true);
             FragmentManager fm = getSupportFragmentManager();
-            Fragment fragment = RecordFragment.newInstance();
+            Fragment fragment = RecordFragmentAlt.newInstance();
             fm.beginTransaction().replace(R.id.flContent,fragment).commit();
         }
     }
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         switch(id) {
             case R.id.nav_record:
                 //fragmentClass = RecordFragment.class;
-                fragment = RecordFragment.newInstance();
+                fragment = RecordFragmentAlt.newInstance();
                 break;
             case R.id.nav_listen_recording:
                 //fragmentClass = ListenRecordingFragment.class;
