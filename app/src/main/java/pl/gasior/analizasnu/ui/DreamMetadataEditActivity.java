@@ -66,10 +66,10 @@ public class DreamMetadataEditActivity extends AppCompatActivity implements Load
         Log.i(TAG,String.valueOf(progress));
         int color = RatingBarColorPicker.getColorForProgress(progress,this);
 
-
-        LayerDrawable layerDrawable = (LayerDrawable) ratingBar.getProgressDrawable();
-        layerDrawable.getDrawable(1).setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-        layerDrawable.getDrawable(2).setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        DrawableCompat.setTint(ratingBar.getProgressDrawable(),color);
+//        LayerDrawable layerDrawable = (LayerDrawable) ratingBar.getProgressDrawable();
+//        layerDrawable.getDrawable(1).setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+//        layerDrawable.getDrawable(2).setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
 
     @Override
