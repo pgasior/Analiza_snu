@@ -35,6 +35,7 @@ dependencies {
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
     compile 'net.danlew:android.joda:2.9.3'
     compile 'com.prolificinteractive:material-calendarview:1.2.1'
+    compile 'com.pavelsikun:material-seekbar-preference:2.3.0+'
 }
 
 

@@ -49,7 +49,7 @@
                 android:value="pl.gasior.analizasnu.ui.MainActivity" />
         </activity>
         <activity android:name=".ui.GraphActivity" />
-        <activity android:name=".ui.ConfigFragment"></activity>
+        <activity android:name=".ui.MyPreferencesActivity"></activity>
         <activity android:name=".ui.DreamMetadataEditActivity"
             android:parentActivityName=".ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
