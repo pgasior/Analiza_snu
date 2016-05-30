@@ -47,6 +47,7 @@ public class DreamDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>, ConfirmAnalysisDialogFragment.ConfirmAnalysisDialogListener{
 
     private final String TAG = this.getClass().getName();
+    public final static String COLUMN_SLICE_START_ALIAS = "COLUMN_SLICE_START_ALIAS";
 
     private boolean playing;
     private boolean removingSilence;
@@ -74,6 +75,8 @@ public class DreamDetailActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         filename = intent.getCharSequenceExtra("filename").toString();
+        String dateStart = intent.getStringExtra("dateStart");
+        setTitle(dateStart);
         Log.i(TAG, "Odczytalem: " + filename);
         FragmentManager fm = getSupportFragmentManager();
         playFragment = (PlayRetainingFragment) fm.findFragmentByTag("playFragment");
@@ -300,7 +303,8 @@ public class DreamDetailActivity extends AppCompatActivity
         String[] projection = new String[] {
                 DreamSliceEntry.TABLE_NAME+"."+ DreamSliceEntry._ID,
                 DreamSliceEntry.COLUMN_SLICE_FILENAME,
-                DreamSliceEntry.COLUMN_USER_VERDICT
+                DreamSliceEntry.COLUMN_USER_VERDICT,
+                "time("+DreamSliceEntry.COLUMN_SLICE_START+") as " + COLUMN_SLICE_START_ALIAS
         };
         String selection= DreamListContract.DreamEntry.COLUMN_NAME_AUDIO_FILENAME+" = ?";
         String[] selectionArgs= new String[] {filename};

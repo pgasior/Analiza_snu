@@ -39,6 +39,7 @@ import pl.gasior.analizasnu.db.DreamListProvider;
  */
 public class ListenRecordingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static String TAG = ListenRecordingFragment.class.getName().toString();
+    public final static String COLUMN_NAME_DATE_START_ALIAS = "COLUMN_NAME_DATE_START_ALIAS";
     private OnFragmentInteractionListener mListener;
     SimpleCursorAdapter adapter;
     ListView lv;
@@ -78,12 +79,14 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
         if(hasArgs) {
             stringDateStart = getArguments().getString("stringDateStart", null);
             stringDateEnd = getArguments().getString("stringDateEnd", null);
+            getActivity().setTitle(stringDateStart);
         }
 
     }
-    private void startDetailActivity(String filename) {
+    private void startDetailActivity(String filename, String dateStart) {
         Intent intent = new Intent(getActivity(),DreamDetailActivity.class);
         intent.putExtra("filename", filename);
+        intent.putExtra("dateStart",dateStart);
         startActivity(intent);
     }
 
@@ -95,7 +98,7 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
         View view = inflater.inflate(R.layout.fragment_listen_recording, container, false);
         lv = (ListView)view.findViewById(R.id.listView);
 
-        String[] fromColumns = {DreamEntry.COLUMN_NAME_AUDIO_FILENAME};
+        String[] fromColumns = {COLUMN_NAME_DATE_START_ALIAS};
         int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
         adapter = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_1,null,
@@ -106,7 +109,8 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor c = (Cursor) parent.getAdapter().getItem(position);
                 String filename = c.getString(c.getColumnIndex(DreamEntry.COLUMN_NAME_AUDIO_FILENAME));
-                startDetailActivity(filename);
+                String dateStart = c.getString(c.getColumnIndex(DreamEntry.COLUMN_NAME_DATE_START));
+                startDetailActivity(filename, dateStart);
 
             }
         });
@@ -185,7 +189,9 @@ public class ListenRecordingFragment extends Fragment implements LoaderManager.L
         Log.i("RF",uri.toString());
         String projection[] = new String[] {
                 DreamEntry._ID,
-                DreamEntry.COLUMN_NAME_AUDIO_FILENAME
+                DreamEntry.COLUMN_NAME_AUDIO_FILENAME,
+                "time("+DreamEntry.COLUMN_NAME_DATE_START+") as " + COLUMN_NAME_DATE_START_ALIAS,
+                DreamEntry.COLUMN_NAME_DATE_START
         };
         String selection = null;
         String selectionArgs[] = null;

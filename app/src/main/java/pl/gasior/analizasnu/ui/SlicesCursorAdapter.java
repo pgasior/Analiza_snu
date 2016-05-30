@@ -59,8 +59,10 @@ public class SlicesCursorAdapter extends CursorAdapter {
         final int id = cursor.getInt(cursor.getColumnIndex(DreamSliceEntry._ID));
         final int verdict = cursor.getInt(cursor.getColumnIndex(DreamSliceEntry.COLUMN_USER_VERDICT));
         updateViewColor(context, view,verdict);
-        String filename = cursor.getString(cursor.getColumnIndex(DreamSliceEntry.COLUMN_SLICE_FILENAME));
-        viewHolder.name.setText(filename);
+        //String filename = cursor.getString(cursor.getColumnIndex(DreamSliceEntry.COLUMN_SLICE_FILENAME));
+        String startTime = cursor.getString(cursor.getColumnIndex(DreamDetailActivity.COLUMN_SLICE_START_ALIAS));
+        viewHolder.name.setText(startTime);
+        //viewHolder.name.setText(filename);
         //viewHolder.button.setTag(1,verdict);
         //viewHolder.button.setTag(2,cursor.getInt(cursor.getColumnIndex(DreamSliceEntry._ID)));
         viewHolder.button.setOnClickListener(new View.OnClickListener() {
