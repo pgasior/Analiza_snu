@@ -16,7 +16,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
+        android:text="Oznacz"
         android:id="@+id/slice_toggle_button"
         android:focusable="false"
         android:layout_alignParentTop="true"
