@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
@@ -14,6 +15,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -69,16 +71,21 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
-        //       Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //       setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
 
 
         Intent intent = getIntent();
         filename = intent.getCharSequenceExtra("filename").toString();
+        String title = "Wykres odgłosów snu";
         Log.i(TAG,"Odebralem "+filename);
-
+        setTitle(title);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
         getSupportLoaderManager().initLoader(0, null, this);
+
 
 
     }
@@ -122,6 +129,14 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
 
     public void onLoaderReset(Loader<Cursor> loader) {
         // adapter.swapCursor(null);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void processData(Cursor c) {
@@ -228,10 +243,10 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         for(int k = 0;k<diff_s;k++)
         {
             if(datasetnr[k] == 0){
-                colors[k] = Color.BLUE;
+                colors[k] = Color.rgb(30,144,255);
             }
             else if(datasetnr[k] == 1){
-                colors[k] = Color.GREEN;
+                colors[k] = Color.rgb(50,205,50);
             }
             else
             {
@@ -248,10 +263,13 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         YAxis ryax = mChart.getAxisRight();
         XAxis xax = mChart.getXAxis();
         lyax.setAxisMaxValue(1.0f); //2.0f
+        lyax.setDrawLabels(false);
+        ryax.setDrawLabels(false);
         set1.setDrawValues(false);
-        ryax.setEnabled(false);
+        //ryax.setEnabled(false);
+        xax.setDrawLabels(true);
         mChart.getLegend().setEnabled(false);
-        mChart.setDescription("");
+        mChart.setDescription("czas[s]");
         BarData data = new BarData(xVals, dataSets);
 //        data.setGroupSpace(0);
         mChart.setData(data);
