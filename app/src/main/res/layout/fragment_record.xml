@@ -59,7 +59,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Kalibracja"
+        android:text="@string/calibrate"
         android:id="@+id/calibrationButton"
         android:layout_below="@+id/timeTextView"
         android:layout_alignLeft="@+id/timeTextView"

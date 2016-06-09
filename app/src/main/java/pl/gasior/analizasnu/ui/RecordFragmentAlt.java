@@ -162,7 +162,7 @@ public class RecordFragmentAlt extends Fragment {
         switch(currentState) {
             case BEFORE_CALIBRATION:
                 tvUserInstruction.setVisibility(View.INVISIBLE);
-                startRecord.setText("Rozpocznij kalibrację");
+                startRecord.setText(R.string.start_calibration);
                 startRecord.setEnabled(true);
                 startRecord.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -190,7 +190,7 @@ public class RecordFragmentAlt extends Fragment {
                         updateState();
                     }
                 });
-                startRecord.setText("Start");
+                startRecord.setText(R.string.start);
                 startRecord.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

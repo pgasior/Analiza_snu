@@ -52,7 +52,7 @@ public class SilenceRemovalService extends Service {
         NotificationCompat.Builder mBuilder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                         .setOngoing(true)
-                        .setContentTitle("Usuwanie ciszy")
+                        .setContentTitle(getString(R.string.removing_silence))
                         .setSmallIcon(R.drawable.ic_hearing)
                         .setContentIntent(pi);
         startForeground(NOTIFICATION_ID,mBuilder.build());

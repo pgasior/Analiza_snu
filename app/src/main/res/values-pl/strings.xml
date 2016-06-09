@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="name">Nazwa</string>
+    <string name="description">Opis</string>
+    <string name="play">Odtwarzaj</string>
+    <string name="stop">Stop</string>
+    <string name="analysis">Analiza</string>
+    <string name="graph">Wykres</string>
+    <string name="dream_metadata">Dane o śnie</string>
+    <string name="calibrate">Kalibracja</string>
+    <string name="analyze_while_recording">Analiza w trakcie nagrywania</string>
+    <string name="start">Start</string>
+    <string name="wait_until_silence">Poczekaj aż będzie cicho i naciśnij przycisk Start</string>
+    <string name="sound_level">Poziom dźwięku:</string>
+    <string name="detect_level">Poziom wykrycia:</string>
+    <string name="mark">Oznacz</string>
+    <string name="record">Nagraj</string>
+    <string name="show_recordings">Zobacz nagrania</string>
+    <string name="calendar">Kalendarz</string>
+    <string name="configuration">Konfiguracja</string>
+    <string name="delete">Usuń</string>
+    <string name="apply">Zatwierdź</string>
+    <string name="cancel">Anuluj</string>
+    <string name="analysis_information">Analiza może chwilę potrwać, w zależności od długości nagrania. Oznaczenia zostaną usunięte</string>
+    <string name="ok">OK</string>
+    <string name="start_calibration">Rozpocznij kalibrację</string>
+    <string name="removing_silence">Usuwanie ciszy</string>
+    <string name="graph_activity_title">Wykres odgłosów snu</string>
+</resources>

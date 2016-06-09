@@ -78,7 +78,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
 
         Intent intent = getIntent();
         filename = intent.getCharSequenceExtra("filename").toString();
-        String title = "Wykres odgłosów snu";
+        String title = getString(R.string.graph_activity_title);
         Log.i(TAG,"Odebralem "+filename);
         setTitle(title);
         ActionBar actionBar = getSupportActionBar();

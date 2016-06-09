@@ -29,7 +29,7 @@
             android:layout_marginRight="10dp"
             android:width="140dp"
             android:background="@color/green"
-            android:text="Odtwarzaj"
+            android:text="@string/play"
             android:drawableLeft="@drawable/ic_play_arrow_black"
             android:drawablePadding="-10dp"
             />
@@ -44,7 +44,7 @@
             android:layout_toRightOf="@+id/startPlayButton"
             android:width="140dp"
             android:background="@color/red"
-            android:text="Stop"
+            android:text="@string/stop"
             android:drawableLeft="@drawable/ic_stop_black"
             android:drawablePadding="-10dp"
             />
@@ -63,7 +63,7 @@
             android:id="@+id/analysisButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Analiza"
+            android:text="@string/analysis"
 
             />
 
@@ -71,14 +71,14 @@
             android:id="@+id/graphButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Wykres" />
+            android:text="@string/graph" />
 
         <Button
             android:id="@+id/metadataButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Dane o śnie" />
+            android:text="@string/dream_metadata" />
 
     </LinearLayout>
 

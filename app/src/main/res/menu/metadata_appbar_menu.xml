@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/adction_accept"
-        android:title="Zatwierdź"
+        android:title="@string/apply"
         android:icon="@drawable/ic_check"
         app:showAsAction="always"
         ></item>
 
     <item
         android:id="@+id/adction_cancel"
-        android:title="Anuluj"
+        android:title="@string/cancel"
         android:icon="@drawable/ic_close"
         app:showAsAction="always"
         ></item>
