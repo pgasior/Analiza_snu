@@ -1,10 +1,13 @@
 package pl.gasior.analizasnu.ui;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -54,6 +57,10 @@ public class MainActivity extends AppCompatActivity
             Fragment fragment = RecordFragmentAlt.newInstance();
             fm.beginTransaction().replace(R.id.flContent,fragment).commit();
         }
+
+        //czytane preferencji
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        Log.d("config calibrationLevel", String.valueOf(sharedPref.getInt("calibrationLevel",0)));
     }
 
     public void disableDrawer() {
@@ -75,27 +82,24 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.action_settings:
+//                //Toast.makeText(this, "ADD!", Toast.LENGTH_SHORT).show();
+//                Intent i = new Intent(this, MyPreferencesActivity.class);
+//                startActivity(i);
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -104,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment fragment = null;
         Class fragmentClass;
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
         switch(id) {
             case R.id.nav_record:
                 //fragmentClass = RecordFragment.class;
@@ -119,8 +123,15 @@ public class MainActivity extends AppCompatActivity
                 fragment = DreamCalendarFragment.newInstance();
                 break;
             case R.id.nav_manage:
-                fragment = ConfigFragment.newInstance();
-                break;
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+//                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//                navigationView.getMenu().getItem(0).setChecked(true);
+                //fragment = ConfigFragment.newInstance();
+                Intent i = new Intent(this, MyPreferencesActivity.class);
+                startActivity(i);
+                return false;
+                //break;
             default:
                 //fragmentClass = RecordFragment.class;
                 fragment = DreamCalendarFragment.newInstance();
@@ -132,7 +143,7 @@ public class MainActivity extends AppCompatActivity
 //            e.printStackTrace();
 //        }
 
-
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.flContent,fragment).commit();
         Log.i("Main","Ustawilem fragment");
         item.setChecked(true);
