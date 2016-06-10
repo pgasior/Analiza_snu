@@ -161,6 +161,7 @@ public class RecordFragmentAlt extends Fragment {
     private void updateState() {
         switch(currentState) {
             case BEFORE_CALIBRATION:
+                cbAnalysisDuringRecording.setVisibility(View.VISIBLE);
                 tvUserInstruction.setVisibility(View.INVISIBLE);
                 startRecord.setText(R.string.start_calibration);
                 startRecord.setEnabled(true);
@@ -177,6 +178,7 @@ public class RecordFragmentAlt extends Fragment {
                 stopRecord.setEnabled(false);
                 break;
             case CALIBRATING:
+                cbAnalysisDuringRecording.setVisibility(View.INVISIBLE);
                 tvUserInstruction.setVisibility(View.VISIBLE);
                 stopRecord.setEnabled(true);
 
