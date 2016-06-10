@@ -45,4 +45,5 @@
     <string name="settings_calibration_level_title">Sound detection level</string>
     <string name="settings_analyze_while_record_summary">Detect sounds during sleep and save them in separate fragments.</string>
     <string name="settings_analyze_while_record_title">Analyze while recording</string>
+    <string name="press_button_to_analyze">Press Analyze button to detect fragments</string>
 </resources>

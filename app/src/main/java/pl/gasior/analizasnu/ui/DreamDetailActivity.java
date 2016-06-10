@@ -318,7 +318,11 @@ public class DreamDetailActivity extends AppCompatActivity
         slicesCursorAdapter.swapCursor(data);
         if(data.getCount()>0){
             graphButton.setEnabled(true);
+            tvProcessed.setVisibility(View.INVISIBLE);
         } else {
+
+            tvProcessed.setVisibility(View.VISIBLE);
+            tvProcessed.setText(R.string.press_button_to_analyze);
             graphButton.setEnabled(false);
         }
     }

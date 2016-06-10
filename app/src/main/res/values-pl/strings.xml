@@ -34,4 +34,5 @@
     <string name="settings_calibration_level_title">Poziom wykrywania dżwięku</string>
     <string name="settings_analyze_while_record_summary">Wykrywaj dźwięki w trakcie snu i zapisz je w oddzielnych fragmentach.</string>
     <string name="settings_analyze_while_record_title">Analiza w trakcie nagrywania</string>
+    <string name="press_button_to_analyze">Naciśnij przycisk Analiza aby wykryć fragmenty</string>
 </resources>
