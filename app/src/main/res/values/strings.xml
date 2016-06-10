@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Analiza snu</string>
+    <string name="app_name">Dream analysis</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -18,11 +18,11 @@
     <string name="stop">Stop</string>
     <string name="analysis">Analyze</string>
     <string name="graph">Graph</string>
-    <string name="dream_metadata">Informations about dream</string>
+    <string name="dream_metadata">Dream details</string>
     <string name="calibrate">Calibrate</string>
-    <string name="analyze_while_recording">Analize while recording</string>
+    <string name="analyze_while_recording">Analyze while recording</string>
     <string name="start">Start</string>
-    <string name="wait_until_silence">Wait untils it\'s quiet and press Start</string>
+    <string name="wait_until_silence">Wait until it\'s quiet in your surroundings and press Start</string>
     <string name="sound_level">Sound level:</string>
     <string name="detect_level">Detection level:</string>
     <string name="mark">Mark</string>
@@ -33,9 +33,10 @@
     <string name="delete">Delete</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
-    <string name="analysis_information">Analysis may take while. Marked slices will be removed.</string>
+    <string name="analysis_information">The analysis may take a while. Marks on slices will be removed.</string>
     <string name="ok">OK</string>
     <string name="start_calibration">Begin calibration</string>
     <string name="removing_silence">Removing silence</string>
     <string name="graph_activity_title">Dream sounds graph</string>
+    <string name="graph_description">time[hh:mm:ss]</string>
 </resources>

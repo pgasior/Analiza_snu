@@ -17,7 +17,7 @@
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart1"
         android:layout_width="match_parent"
-        android:layout_height="300px"
+        android:layout_height="300dp"
         android:layout_above="@+id/seekBar1" />
 
 </android.support.design.widget.CoordinatorLayout>

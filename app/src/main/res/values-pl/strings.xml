@@ -26,4 +26,6 @@
     <string name="start_calibration">Rozpocznij kalibrację</string>
     <string name="removing_silence">Usuwanie ciszy</string>
     <string name="graph_activity_title">Wykres odgłosów snu</string>
+    <string name="graph_description">czas[hh:mm:ss]</string>
+    <string name="app_name"></string>
 </resources>
