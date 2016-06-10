@@ -3,27 +3,20 @@
     xmlns:sample="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-    <EditTextPreference
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:key="username"
-        android:enabled="false"
-        android:summary="Wprowadź swoją nazwę użytkownika"
-        android:title="Nazwa użytkownika"></EditTextPreference>
     <CheckBoxPreference
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:defaultValue="false"
         android:enabled="false"
         android:key="applicationUpdates"
-        android:summary="Ta opcja pozwala na automatyczne sprawdzanie dostępności nowych wersji aplikacji."
-        android:title="Automatyczne aktualizacje" />
+        android:summary="@string/settings_update_summary"
+        android:title="@string/settings_update_title" />
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:defaultValue="5"
         android:enabled="true"
         android:key="calibrationLevel"
-        android:summary="Dostosuj czułość w celu poprawnej analizy dźwięku."
-        android:title="Poziom wykrywania dżwięku"
+        android:summary="@string/settings_calibration_level_summary"
+        android:title="@string/settings_calibration_level_title"
 
         sample:msbp_dialogEnabled="false"
         sample:msbp_interval="1"
@@ -36,7 +29,7 @@
         android:defaultValue="false"
         android:enabled="false"
         android:key="privacy"
-        android:summary="Wykrywaj dźwięki w trakcie snu i zapisz je w oddzielnych fragmentach."
-        android:title="Analiza w trakcie nagrywania" />
+        android:summary="@string/settings_analyze_while_record_summary"
+        android:title="@string/settings_analyze_while_record_title" />
 
 </PreferenceScreen>

@@ -39,4 +39,10 @@
     <string name="removing_silence">Removing silence</string>
     <string name="graph_activity_title">Dream sounds graph</string>
     <string name="graph_description">time[hh:mm:ss]</string>
+    <string name="settings_update_summary">This setting allows the app to automatically check availability of newer versions</string>
+    <string name="settings_update_title">Automatic updates.</string>
+    <string name="settings_calibration_level_summary">Adjust sensitivity to correctly analyze sound.</string>
+    <string name="settings_calibration_level_title">Sound detection level</string>
+    <string name="settings_analyze_while_record_summary">Detect sounds during sleep and save them in separate fragments.</string>
+    <string name="settings_analyze_while_record_title">Analyze while recording</string>
 </resources>

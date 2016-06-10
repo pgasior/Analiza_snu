@@ -27,4 +27,11 @@
     <string name="removing_silence">Usuwanie ciszy</string>
     <string name="graph_activity_title">Wykres odgłosów snu</string>
     <string name="graph_description">czas[hh:mm:ss]</string>
+
+    <string name="settings_update_summary">Ta opcja pozwala na automatyczne sprawdzanie dostępności nowych wersji aplikacji.</string>
+    <string name="settings_update_title">Automatyczne aktualizacje.</string>
+    <string name="settings_calibration_level_summary">Dostosuj czułość w celu poprawnej analizy dźwięku.</string>
+    <string name="settings_calibration_level_title">Poziom wykrywania dżwięku</string>
+    <string name="settings_analyze_while_record_summary">Wykrywaj dźwięki w trakcie snu i zapisz je w oddzielnych fragmentach.</string>
+    <string name="settings_analyze_while_record_title">Analiza w trakcie nagrywania</string>
 </resources>
