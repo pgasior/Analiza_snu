@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentManager;
@@ -29,12 +30,14 @@ import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.formatter.XAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import com.github.mikephil.charting.components.YAxis.AxisDependency;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 
 //import java.sql.Timestamp;
@@ -49,6 +52,7 @@ import pl.gasior.analizasnu.db.DreamListContract;
 /**
  * Created by serq9_000 on 2016-04-16.
  */
+
 public class GraphActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
@@ -79,7 +83,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         Intent intent = getIntent();
         filename = intent.getCharSequenceExtra("filename").toString();
         String title = getString(R.string.graph_activity_title);
-        Log.i(TAG,"Odebralem "+filename);
+        //Log.i(TAG,"Odebralem "+filename);
         setTitle(title);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -112,8 +116,8 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         String[] sounds = new String[] {
                 DreamListContract.DreamEntry.COLUMN_NAME_DATE_START
         };
-        Log.i("CP",selection);
-        Log.i("CP","Selection args:");
+        //Log.i("CP",selection);
+        //Log.i("CP","Selection args:");
         for(String s : selectionArgs) {
             Log.i("CP",s);
         }
@@ -123,7 +127,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(TAG,"Load finished");
+        //Log.i(TAG,"Load finished");
         processData(data);
     }
 
@@ -173,10 +177,10 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
 
         DateTime pocz_s = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_START)), f);
         DateTime kon_s = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_END)), f);
-        Log.i(TAG, "przed while, poczatek snu: " + c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_START)) + " koniec: " + c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_END)));
+       //Log.i(TAG, "przed while, poczatek snu: " + c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_START)) + " koniec: " + c.getString(c.getColumnIndex(DreamListContract.DreamEntry.COLUMN_NAME_DATE_END)));
         Seconds seconds = Seconds.secondsBetween(pocz_s, kon_s);
         int diff_s = seconds.getSeconds();
-        Log.i(TAG, "w while diff_s = " + diff_s);
+        //Log.i(TAG, "w while diff_s = " + diff_s);
         y = new float[diff_s + 1];
         Arrays.fill(y, -1.0f);
         x = new int[diff_s + 1];
@@ -190,7 +194,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
             fragmenty[c.getPosition()][1] = DateTime.parse(c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0, 19), f);
             verdict[c.getPosition()] = c.getInt(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_USER_VERDICT));
             lfrag++;
-            Log.i(TAG, "w while, poczatek fragmentu: " + c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_START)).substring(0, 19) + " koniec: " + c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0, 19));
+            //Log.i(TAG, "w while, poczatek fragmentu: " + c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_START)).substring(0, 19) + " koniec: " + c.getString(c.getColumnIndex(DreamListContract.DreamSliceEntry.COLUMN_SLICE_END)).substring(0, 19));
             c.moveToNext();
         }
         int i;
@@ -200,7 +204,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         }
         for(int j = 0; j < lfrag; j++)
         {
-            Log.i(TAG,"j = "+j +", verdict[j] =  "+verdict[j]);
+            //Log.i(TAG,"j = "+j +", verdict[j] =  "+verdict[j]);
             if(verdict[j] == 0 || verdict[j] == 1)
             {
                 Seconds r1 = Seconds.secondsBetween(pocz_s, fragmenty[j][0]);
@@ -231,8 +235,8 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         ArrayList<String> xVals = new ArrayList<String>();
         for(int k=0;k<diff_s;k++)
         {
-            Log.i(TAG,"y["+k+"] = "+y[k]);
-            Log.i(TAG,"dataset = "+datasetnr[k]);
+            //Log.i(TAG,"y["+k+"] = "+y[k]);
+            //Log.i(TAG,"dataset = "+datasetnr[k]);
             BarEntry e = new BarEntry(y[k],x[k]);
             vals.add(e);
             xVals.add(" "+k);
@@ -252,7 +256,7 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
             {
                 colors[k] = Color.WHITE;
             }
-            Log.i(TAG,"color["+k+"]= "+datasetnr[k]);
+            //Log.i(TAG,"color["+k+"]= "+datasetnr[k]);
         }
         set1.setAxisDependency(AxisDependency.LEFT);
         set1.setBarSpacePercent(0);
@@ -266,12 +270,21 @@ public class GraphActivity extends AppCompatActivity implements LoaderManager.Lo
         lyax.setDrawLabels(false);
         ryax.setDrawLabels(false);
         set1.setDrawValues(false);
-        //ryax.setEnabled(false);
         xax.setDrawLabels(true);
+        xax.setValueFormatter(new XAxisValueFormatter() {
+            @Override
+            public String getXValue(String original, int index, ViewPortHandler viewPortHandler) {
+                String x_final;
+                int hours = Integer.parseInt(original.trim()) / 3600;
+                int minutes = (Integer.parseInt(original.trim()) % 3600) / 60;
+                int seconds = Integer.parseInt(original.trim()) % 60;
+                x_final = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                return x_final;
+            }
+        });
         mChart.getLegend().setEnabled(false);
-        mChart.setDescription("czas[s]");
+        mChart.setDescription(getString(R.string.graph_description));
         BarData data = new BarData(xVals, dataSets);
-//        data.setGroupSpace(0);
         mChart.setData(data);
         mChart.invalidate();
     }
